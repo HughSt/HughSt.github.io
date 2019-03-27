@@ -1,0 +1,27 @@
+[general] 
+creator=R package 'raster' 
+created= 2011-11-12 14:46:05 
+[georeference] 
+nrows= 708 
+ncols= 972 
+xmin= -5.6 
+ymin= 9.3 
+xmax= 2.5 
+ymax= 15.2 
+projection= +proj=longlat +ellps=WGS84 
+[data] 
+datatype= INT2S 
+byteorder= little 
+nbands= 1 
+bandorder= BIL 
+categorical= FALSE 
+minvalue= 143 
+maxvalue= 704 
+nodatavalue= -9999 
+[legend] 
+legendtype=  
+values=  
+color=  
+[description] 
+layername= BFA_msk_alt 
+history=  

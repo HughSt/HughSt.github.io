@@ -1,0 +1,46 @@
+title: Spatial epidemiology in R # your site title
+author: HughSt
+email: hugh.sturrock@ucsf.edu # email for form submission, you also have to change it in _js/scripts.js
+description: > # this means to ignore newlines until "baseurl:"
+  Spatial epidemiology in R
+baseurl: "/" # the subpath of your site, e.g. /blog
+url: "https://hughst.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+
+social:
+  name: Your Name
+  links:
+    - https://twitter.com/BenBalter
+    - https://www.facebook.com/ben.balter
+    - https://www.linkedin.com/in/BenBalter
+    - https://plus.google.com/+BenBalter
+    - https://github.com/benbalter
+    - https://keybase.io/benbalter
+
+disqus:
+  shortname:  # to enable comments replace with your_disqus_shortname
+
+# Build settings
+markdown: kramdown
+highlighter: rouge # or pygments or null
+theme: jekyll-sleek
+exclude:
+  - README.md
+  - node_modules
+  - package.json
+  - package-lock.json
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - npm-debug.log
+  - gulpfile.js
+  - sleek.png
+
+include: ['_pages']
+permalink: /:title/
+
+compress_html:
+  clippings: all
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag

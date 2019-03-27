@@ -1,0 +1,9 @@
+
+Webster, T., Vieira, V., Weinberg, J., & Aschengrau, A. (2006). Method for mapping population-based case-control studies: an application using generalized additive models. International journal of health geographics, 5, 26. doi:10.1186/1476-072X-5-26
+
+Siangphoe, U., & Wheeler, D. C. (2015). Evaluation of the Performance of Smoothing Functions in Generalized Additive Models for Spatial Variation in Disease. Cancer Informatics. https://doi.org/10.4137/CIN.S17300
+
+
+More details about Generalized Additive Models: https://m-clark.github.io/generalized-additive-models/
+
+Related to the Meuse dataset, but following a different approach from what we did in this session: https://rstudio-pubs-static.s3.amazonaws.com/134781_28af3676f8b943749ebfa536b3897cac.html
