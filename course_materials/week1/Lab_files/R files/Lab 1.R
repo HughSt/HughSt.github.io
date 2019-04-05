@@ -1,14 +1,10 @@
 ###Lab 1: Working with Spatial Data in R
-#Normally this type of analysis deals with three types of files:
-#Shapefiles, geojson, or tables with coordinates
+# Normally this type of analysis deals with three types of files:
+# Shapefiles, geojson, or tables with coordinates
 
 #Start by ensuring the following packages are loaded
-
-install.packages("sp")
 library(sp)
-install.packages("raster")
 library(raster)
-install.packages("rgdal")
 library(rgdal)
 
 # The simplest data is a table with coordinates (i.e. point data)
@@ -20,7 +16,7 @@ setwd("your file path here")
 
 ##Plotting Point Data
 #Import the data
-BF_malaria_data <- read.csv("BF_malaria_data.csv",
+BF_malaria_data <- read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week1/Lab_files/Data/BF_malaria_data.csv",
                             header=T)
 
 # The columns should be self-explanatory, but briefly:
@@ -126,7 +122,6 @@ points(BF_malaria_data$longitude, BF_malaria_data$latitude,
 
 
 ## Plotting Over a Web Map
-install.packages("leaflet")
 library(leaflet)
 
 #leaflet allows you to layer a basemap using the pipe command %>%
@@ -162,7 +157,6 @@ basemap %>% addPolygons(data=BF_Adm_1, weight = 2,
                              color="red", radius = 2)
 
 #If you want to change the color according to a variable, i.e. prevalence, you can use the colorNumeric function
-install.packages("oro.nifti")
 library(oro.nifti) # for a nice color palette
 colorPal <- colorQuantile(tim.colors(), BF_malaria_data_SPDF$infection_prevalence, n = 4)
 

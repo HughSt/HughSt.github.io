@@ -1,27 +1,32 @@
----
-layout: post
-title: Week 1 - Visualizing spatial data
-featured-img: unemployment_USA_2016
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-Week 1 - visualizing spatial data
----------------------------------
-
-Welcome to week 1 of spatial analysis for public health. This week we will be learning about the process of moving from visualizing spatial data through to exploration and analysis. We will get our hands dirty with some R code and learn how to make beautiful maps.
-
-This week's [lecture]() will focus on some of the concepts behind spatial epidemiology. I will then walk you through some R code to load and visualize spatial data in [this video](). You will then have a chance to apply that code to new data and questions in this week's [assignment]().
-
-As ever, post any questions on the b-courses piazza and if you are still having issues, join us on 1 of the office hour sessions where we can walk you through any challenges you are having.
-
-Good luck!
-
+Untitled
+================
 
 Lab 1: Working with Spatial Data in R
--------------------------------------
+=====================================
+
+Normally this type of analysis deals with three types of files: shapefiles, geojson, or tables with coordinates
+
+Start by ensuring the following packages are loaded
+
+``` r
+library(sp)
+library(raster)
+```
+
+    ## Warning: package 'raster' was built under R version 3.5.2
+
+``` r
+library(rgdal)
+```
+
+    ## rgdal: version: 1.3-6, (SVN revision 773)
+    ##  Geospatial Data Abstraction Library extensions to R successfully loaded
+    ##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
+    ##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/gdal
+    ##  GDAL binary built with GEOS: FALSE 
+    ##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
+    ##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/proj
+    ##  Linking to sp version: 1.3-1
 
 The simplest data is a table with coordinates (i.e. point data). For this assignment, we'll work with malaria prevalence point data from Burkina Faso.
 
@@ -79,11 +84,3 @@ plot(BF_malaria_data$longitude, BF_malaria_data$latitude,
 ```
 
 ![](lab1_md_files/figure-markdown_github/unnamed-chunk-3-3.png)
-
-Resources
----------
-
-The R packages [sp](https://cran.r-project.org/web/packages/sp/index.html) and [raster](https://cran.r-project.org/web/packages/raster/index.html) are both important packages for spatial analysis.
-
-R studio also have a fantastic [site](https://rstudio.github.io/leaflet/) outlining the use of leaflet
-

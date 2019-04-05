@@ -1,0 +1,53 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Lab 1: Working with Spatial Data in R
+Normally this type of analysis deals with three types of files: shapefiles, geojson, or tables with coordinates
+
+Start by ensuring the following packages are loaded
+```{r}
+library(sp)
+library(raster)
+library(rgdal)
+```
+
+The simplest data is a table with coordinates (i.e. point data). For this assignment, we'll work with malaria prevalence point data from Burkina Faso. 
+
+Import the data
+```{r}
+BF_malaria_data <- read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week1/Lab_files/Data/BF_malaria_data.csv",
+                            header=T)
+```
+
+The columns should be self-explanatory, but briefly:
+- examined = numbers tested
+- positives = of those tested, how many were positive for malaria
+- longitude = longitude in decimal degrees
+- latitude = latitude in decimal degrees
+
+```{r}
+head(BF_malaria_data) # gives you the first few rows
+names(BF_malaria_data) # gives you the column names
+
+# If you want to create a new variable, you can use the $ sign
+#Example: Prevalence
+BF_malaria_data$infection_prevalence <- BF_malaria_data$positives / BF_malaria_data$examined
+
+#Create a histogram of the prevalence
+hist(BF_malaria_data$infection_prevalence, breaks=20)
+
+# Use R's basic plotting function to plot 
+plot(BF_malaria_data$longitude, BF_malaria_data$latitude,
+     ylab = "Latitude", xlab="Longitude") #boring!
+
+# Use the cex function to plot circle size as a function of a variable
+plot(BF_malaria_data$longitude, BF_malaria_data$latitude, 
+     cex=BF_malaria_data$infection_prevalence,
+     ylab = "Latitude", xlab="Longitude (decimal degrees)")
+```
