@@ -125,15 +125,15 @@ points(BF_malaria_data$longitude, BF_malaria_data$latitude,
 library(leaflet)
 
 #leaflet allows you to layer a basemap using the pipe command %>%
-leaflet() %>% addTiles()
+basemap <- leaflet() %>% addTiles()
+basemap
 
-
-#You can use one of several basemaps
-leaflet() %>% addTiles("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}")
-leaflet() %>% addTiles("https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png")
+# Or choose another basemap
+basemap <- leaflet() %>% addProviderTiles("Esri.WorldImagery")
+basemap
 
 #Let's choose a simple one
-basemap <- leaflet() %>% addTiles("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png")
+basemap <- leaflet() %>% addProviderTiles("CartoDB.Positron")
 
 #You can use the 'piping' command %>% to add layers
 #As our point and polygon data are already SP object this is easy
@@ -157,8 +157,8 @@ basemap %>% addPolygons(data=BF_Adm_1, weight = 2,
                              color="red", radius = 2)
 
 #If you want to change the color according to a variable, i.e. prevalence, you can use the colorNumeric function
-library(oro.nifti) # for a nice color palette
-colorPal <- colorQuantile(tim.colors(), BF_malaria_data_SPDF$infection_prevalence, n = 4)
+library(wesanderson) # for a nice color palette
+colorPal <- colorQuantile(wes_palette("Zissou1")[1:5], BF_malaria_data_SPDF$infection_prevalence, n = 5)
 
 # colorPal is now a function you can apply to get the corresponding
 # color for a value
@@ -175,21 +175,17 @@ basemap %>% addPolygons(data=BF_Adm_1, weight = 2, fillOpacity=0,
 
 # Might want to add a legend. This just goes on as another layer
 # First calculate the labels. In this case, the quantiles of prevalence
-prev_quantiles <- quantile(BF_malaria_data_SPDF$infection_prevalence,
-         prob = seq(0,1,0.25))
-prev_quantiles
-
-
 basemap %>% addPolygons(data=BF_Adm_1, weight = 2, fillOpacity=0,
                         popup = BF_Adm_1$NAME_1) %>%
   
   addCircleMarkers(data=BF_malaria_data_SPDF,
                    color = colorPal(BF_malaria_data_SPDF$infection_prevalence), 
                    radius = 2,
-                   popup = as.character(round(BF_malaria_data_SPDF$infection_prevalence,2))) %>%
+                   popup = as.character(BF_malaria_data_SPDF$infection_prevalence)) %>%
   
-  addLegend(colors=tim.colors(4), 
-            labels = c("<26%", "26 - 45%", "45 - 67%", ">67%"))
+  addLegend(colors=wes_palette("Zissou1")[1:5], 
+            title = "Quintile",
+            labels = c("0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "0.8-1"))
 
 
 
