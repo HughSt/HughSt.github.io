@@ -19,7 +19,7 @@ setwd("your file path here")
 
 ##Subsetting Data
 # Let's get admin 1 data for Burkina Faso
-BF_Adm_1 <- readOGR(".", layer = "gadm36_BFA_1")
+BF_Adm_1 <- raster::getData("GADM", country="BFA", level = 1)
 
 # You can subset a SpatialPolygonsDataFrame just like a data frame
 #Let's subset the data first by row
@@ -44,8 +44,7 @@ lines(BF_Adm_1_Cascades, col="blue", lwd=2)
 ## Projections 
 # Now read in the BF malaria data
 # (This one has no covariates, we'll get these ourselves
-BF_malaria_data <- read.csv("BF_malaria_data.csv",
-                            header=T)
+BF_malaria_data <- read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week1/Lab_files/Data/BF_malaria_data.csv",header=T)
 
 # Convert to a SPDF
 BF_malaria_data_SPDF <- SpatialPointsDataFrame(coords = BF_malaria_data[,c("longitude", "latitude")],
@@ -96,14 +95,17 @@ head(BF_Adm_1)
 #Mapping Calculated Values
 # Now we can use this to make a map of prevalence
 #Assign a color pallete to the quantiles
-colorPal <- colorQuantile(tim.colors(), BF_Adm_1$prevalence, n = 4)
+colorPal <- colorNumeric(wes_palette("Zissou1")[1:5], BF_Adm_1$prevalence)
 #Plot
 plot(BF_Adm_1, col=colorPal(BF_Adm_1$prevalence))
 
 #...Or
-leaflet() %>% addTiles() %>% addPolygons(data=BF_Adm_1, 
-                                         col=colorPal(BF_Adm_1$prevalence),
-                                         fillOpacity=0.6)
+leaflet() %>% addProviderTiles("CartoDB.Positron") %>% addPolygons(data=BF_Adm_1, 
+                                                                   col=colorPal(BF_Adm_1$prevalence),
+                                                                   fillOpacity=0.6) %>%
+  addLegend(pal = colorPal, 
+            values = BF_Adm_1$prevalence,
+            title = "Prevalence")
 #For practice, can you insert a different basemap using leaflet? Also, can you add a legend?
 
 #You can also define your own color bins
