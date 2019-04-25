@@ -22,7 +22,7 @@ source("assignment 3.R")
 
 # Open Namibia malaria case data
 setwd("...")
-CaseControl<-read.csv("CaseControl.csv")
+CaseControl<-read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week3/Lab_files/CaseControl.csv")
 
 #Create a new object with just the cases, recoded as a number 1
 Cases<-CaseControl[CaseControl$case==1,]
