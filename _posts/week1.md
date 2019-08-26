@@ -238,6 +238,8 @@ clicking on the map.
     basemap <- leaflet() %>% addProviderTiles("Esri.WorldImagery")
     basemap
     
+![](week1_files/figure-gfm/leaflet_esri.png)<!-- -->
+    
     #Let's choose a simple one
     basemap <- leaflet() %>% addProviderTiles("CartoDB.Positron")
 
@@ -246,14 +248,19 @@ polygon data are already ‘Spatial’ object this is easy
 
     basemap %>% addPolygons(data=ETH_Adm_1)
     
-    
+![](week1_files/figure-gfm/leaflet_admin1.png)<!-- -->
+
     # to change the colors/line weight
     basemap %>% addPolygons(data=ETH_Adm_1, color = "red", 
                             weight = 1, fillOpacity = 0.2)
+                            
+![](week1_files/figure-gfm/leaflet_admin1_red.png)<!-- -->
     
     #You can also add popups
     basemap %>% addPolygons(data=ETH_Adm_1, 
                             popup = ETH_Adm_1$NAME_1)
+                            
+![](week1_files/figure-gfm/leaflet_admin1_popup.png)<!-- -->
     
     # If you want to add points as well
     basemap %>% addPolygons(data=ETH_Adm_1, weight = 2,
@@ -262,11 +269,13 @@ polygon data are already ‘Spatial’ object this is easy
                 addCircleMarkers(data=ETH_malaria_data_SPDF,
                                  color="red", radius = 2)
 
-The leaflet package also has some nice functions for generate color
+![](week1_files/figure-gfm/leaflet_admin1_points.png)<!-- -->
+
+The leaflet package also has some nice functions for generating color
 palettes that map to a variable you want to display. For example, if we
 wanted to create a color ramp relative to prevalence we could use the
-`colorQuantile` function. See ?colorQuantile for other ways to build
-color palettes such as `colorNumeric`
+`colorNumeric` function. See ?colorNumeric for other ways to build
+color palettes.
 
     library(wesanderson) # for a nice color palette
     colorPal <- colorNumeric(wes_palette("Zissou1")[1:5], ETH_malaria_data_SPDF$pf_pr, n = 5)
@@ -284,6 +293,8 @@ color palettes such as `colorNumeric`
                        radius = 2,
                        popup = as.character(ETH_malaria_data_SPDF$pf_pr))
 
+![](week1_files/figure-gfm/leaflet_admin1_points_wes.png)<!-- -->
+
 You might want to add a legend. This just goes on as another layer on
 the map. First define the labels. In this case, we are using quintiles.
 
@@ -298,7 +309,9 @@ the map. First define the labels. In this case, we are using quintiles.
       
       addLegend(pal = colorPal, 
                 title = "Prevalence",
-                values = ETH_malaria_data_SPDF$pf_pr )
+                values = ETH_malaria_data_SPDF$pf_pr)
+
+![](week1_files/figure-gfm/leaflet_admin_quintile_popup.png)<!-- -->
 
 For more complex popups, you can define the HTML
 
@@ -312,6 +325,8 @@ For more complex popups, you can define the HTML
                        popup = paste("<p>","Prevalence:",
                                      round(ETH_malaria_data_SPDF$pf_pr,2),
                                      "<p>"))
+
+![](week1_files/figure-gfm/leaflet_admin_quintile_popup2.png)<!-- -->
 
 # Plotting raster data
 
@@ -359,6 +374,8 @@ Alternatively, you can use leaflet
 
     basemap %>% addRasterImage(elev)
 
+![](week1_files/figure-gfm/leaflet_raster.png)<!-- -->
+
 If you want to add a legend, you have to define the color palette first
 
     # Define palette
@@ -367,6 +384,8 @@ If you want to add a legend, you have to define the color palette first
     # Plot
     basemap %>% addRasterImage(elev, color = raster_colorPal) %>%
     addLegend(values = values(elev), pal = raster_colorPal)
+
+![](week1_files/figure-gfm/leaflet_raster_topo.png)<!-- -->
 
 If you want to export the data, there are several options.
 
@@ -378,7 +397,7 @@ If you want to export the data, there are several options.
 <!-- end list -->
 
     library(plotKML)
-    plotKML(BF_malaria_data_SPDF) # see ?plotKML for more options
+    plotKML(ETH_malaria_data_SPDF) # see ?plotKML for more options
 
 # Pop quiz
 
