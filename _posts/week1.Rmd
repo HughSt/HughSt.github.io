@@ -199,7 +199,11 @@ basemap %>% addPolygons(data=ETH_Adm_1, weight = 2, fillOpacity=0,
                    radius = 2,
                    popup = paste("<p>","Prevalence:",
                                  round(ETH_malaria_data_SPDF$pf_pr,2),
-                                 "<p>"))
+                                 "<p>")) %>%
+                                 
+ addLegend(pal = colorPal, 
+            title = "Prevalence",
+            values = ETH_malaria_data_SPDF$pf_pr )
 ```
 
 
