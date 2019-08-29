@@ -541,7 +541,7 @@ waterbodies
 plot(waterbodies)
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](master/_posts/week2_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 The goesphere package has some nice functions such as `dist2Line` which
 calculates distance in meters from spatial data recorded using decimal
