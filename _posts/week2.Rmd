@@ -1,0 +1,297 @@
+---
+layout: post
+title: Week 2 - Manipulating spatial data
+featured-img: nepal_elev
+output: github_document
+always_allow_html: yes
+---
+  
+  ## Week 2 - Manipulating spatial data
+  
+  In week 1, you got to load up some spatial data and make some pretty maps. This week, we will be stepping up a gear and learning how to crop and subset spatial data. We will also be go through the process of resampling rasters.
+
+## Learning outcomes
+
+By the end of this week, you will be able to:
+  
+  - Clip and subset vector and raster data
+- Resample rasters
+- Relate spatial data
+
+
+Load the necessary libraries for this week
+
+
+```{r}
+library(sp)
+library(raster)
+library(leaflet)
+library(rgdal)
+library(geosphere)
+library(rgeos)
+library(wesanderson)
+library(stats)
+```
+
+First we are going to subset some spatial (polygon) data. For this excersize, we are going to use the admin 2 boundaries for Burkina Faso we used in week 1. As a reminder, we can load these in from a local shapefile using the readOGR function, or we can use the handy `getData` function from the `raster` package to access GADM data.
+
+```{r}
+ETH_Adm_1 <- raster::getData("GADM", country="ETH", level = 1)
+```
+You can subset a SpatialPolygonsDataFrame just like a data frame. Let's subset the data first by row/polygon
+```{r}
+ETH_Adm_1_cropped <- ETH_Adm_1[1,]
+
+# Get a summary of the cropped data
+ETH_Adm_1_cropped
+
+# Plot over the top of the full dataset
+plot(ETH_Adm_1_cropped)
+lines(ETH_Adm_1_cropped, col="red", lwd=2)
+```
+
+You can also subset by name. For example, if we wanted to extract the polygon representing the boundary of the province "Cascades"
+```{r}
+ETH_Adm_1_Amhara <- subset(ETH_Adm_1, ETH_Adm_1$NAME_1=="Amhara") #OR BF_Adm_1[BF_Adm_1$NAME_1=="Cascades",] will also work
+ETH_Adm_1_Amhara
+
+#Plot the result
+plot(ETH_Adm_1)
+lines(ETH_Adm_1_Amhara, col="blue", lwd=2)
+```
+
+## Spatial overlays
+Often, we have point and polygon data and wish to relate them. For example, we might want to summarize point data over regions. To illustrate this, we are going to use the Burkina Faso malaria point prevalence data and aggregate that to provincial level to get a provincial level estimate of prevalence. 
+
+```{r}
+# Get the point prevalence data from the GitHub repo
+ETH_malaria_data <- read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week1/Lab_files/Data/mal_data_eth_2009_no_dups.csv",header=T)
+
+# Convert to a SPDF
+ETH_malaria_data_SPDF <- SpatialPointsDataFrame(coords = ETH_malaria_data[,c("longitude", "latitude")],
+                                      data = ETH_malaria_data[,c("examined", "pf_pos", "pf_pr")],
+                                      proj4string = CRS("+init=epsg:4326"))
+```
+
+To identify the Province each point lies within you can use the `over` function from the `sp` package
+```
+ETH_Adm_1_per_point <- over(ETH_malaria_data_SPDF, ETH_Adm_1)
+  Error in .local(x, y, returnList, fn, ...) : identicalCRS(x, y) is not TRUE
+```
+
+This throws an error, because `ETH_malaria_data_SPDF` and `ETH_Adm_1` do not have exactly the same coordinate reference system (CRS). Let's take a look
+
+```{r}
+crs(ETH_Adm_1)
+crs(ETH_malaria_data_SPDF)
+```
+
+To reproject to the same CRS, you can use the `spTransform` function from the `sp` package
+```{r}
+ETH_malaria_data_SPDF <- spTransform(ETH_malaria_data_SPDF, crs(ETH_Adm_1))
+
+# Check the new;y projected object
+ETH_malaria_data_SPDF
+```
+
+Now we can re-run the over command
+```{r}
+ETH_Adm_1_per_point <- over(ETH_malaria_data_SPDF, ETH_Adm_1)
+```
+
+This gives us a table where each row represents a point from `ETH_malaria_data_SPDF` and columns represent the data from `ETH_Adm_1`. Let's take a look
+
+```{r}
+head(ETH_Adm_1_per_point)
+```
+
+Now we can use this to calculate admin unit specific statistics. We might be interested in the number of sites per admin unit. To get that, we could just create a frequency table
+```{r}
+table(ETH_Adm_1_per_point$NAME_1)
+```
+
+Or we can use the `tapply` function for more complex calculations. `tapply` allows us to apply a function across groups. Let's look at the number examined per admin unit
+```{r}
+Nex_per_Adm1 <- tapply(ETH_malaria_data_SPDF$examined, ETH_Adm_1_per_point$NAME_1, sum)
+Nex_per_Adm1
+```
+
+Now let's get the number of positives by admin unit
+```{r}
+Npos_per_Adm1 <- tapply(ETH_malaria_data_SPDF$pf_pos, ETH_Adm_1_per_point$NAME_1, sum)
+Npos_per_Adm1
+```
+
+From these numbers, we can calculate the prevalence per province
+```{r}
+prev_per_Adm1 <- Npos_per_Adm1 / Nex_per_Adm1
+prev_per_Adm1
+```
+
+
+If you want to merge these provincial prevalence estimates back into the province object `ETH_Adm_1` it is best practice to create a new table of prevalence by provice with unique ID for each province. That unique ID can be used to relate and merge the data with `ETH_Adm_1`. 
+
+First convert your prev_per_Adm1 vector into a dataframe with an ID column
+```{r}
+prev_per_Adm1_df <- data.frame(NAME_1 = names(prev_per_Adm1),
+                               prevalence = prev_per_Adm1,
+                               row.names=NULL)
+```
+
+Now merge this with the `ETH_Adm_1` data frame
+```{r}
+ETH_Adm_1 <- merge(ETH_Adm_1, prev_per_Adm1_df,
+                  by = "NAME_1")
+```
+
+You can now see that the additional `prevalence` field has been added 
+```{r}
+head(ETH_Adm_1)
+```
+
+We can now plot province colored by prevalence. Let's use the leaflet package
+```
+# First define a color palette based on prevalence
+colorPal <- colorNumeric(wes_palette("Zissou1")[1:5], ETH_Adm_1$prevalence)
+
+# Plot with leaflet
+leaflet() %>% addProviderTiles("CartoDB.Positron") %>% addPolygons(data=ETH_Adm_1, 
+                                         col=colorPal(ETH_Adm_1$prevalence),
+                                         fillOpacity=0.6) %>%
+                                         addLegend(pal = colorPal, 
+                                         values = ETH_Adm_1$prevalence,
+                                         title = "Prevalence")
+```
+
+
+# Manipulating raster data
+
+You've now seen how to subset polygons and relate point and polygon data. Now we are going to look at basic manipulations of raster data. We are going to load 2 raster file, elevation and land use for Burkina Faso.
+
+
+```{r}
+# Get elevation using the getData function from the raster package
+ETH_elev <- raster::getData("alt", country="ETH")
+plot(ETH_elev)
+
+# Land use (# For information on land use classifications see http://due.esrin.esa.int/files/GLOBCOVER2009_Validation_Report_2.2.pdf)
+ETH_land_use <- raster("https://github.com/HughSt/HughSt.github.io/blob/master/course_materials/week2/Lab_files/ETH_land_use.tif?raw=true")
+ETH_land_use
+
+#Plot the land use raster
+plot(ETH_land_use)
+
+# For a break down of the classes in BF aka how often each land use type occurs in BF
+#(Note: this is just the number of pixels per land use type - NOT acres)
+table(ETH_land_use[]) 
+```
+
+
+## Resampling rasters
+Its good practice to resample rasters to the same extent and resolution (i.e. same grid). This makes it easier to deal with later and to relate rasters to each other. The `resample` command in the `raster` package makes this process easy. The default method is bilinear interpolation, which doesn't make sense for our categorical variable, so we should use the nearest neighbour function 'ngb'
+
+```{r}
+# Takes a little time to run..
+ETH_land_use_resampled <- resample(ETH_land_use, ETH_elev, method="ngb") 
+
+# Get summaries of both raster objects to check resolution and extent
+# and to see whether resampled values look right
+ETH_land_use_resampled
+ETH_elev
+```
+
+## Manipulating rasters
+It is often the case that we want to change the resolution of a raster for analysis. For example, for computational reasons we might want to work at a coarser resolution. First, let's check the resolution
+```{r}
+res(ETH_elev) # in decimal degrees. 1 dd roughly 111km at the equator
+```
+
+Let's aggregate (make lower resolution) by a factor of 10
+```{r}
+ETH_elev_low_res <- aggregate(ETH_elev, fact = 10) # by default, calculates mean
+res(ETH_elev_low_res)
+plot(ETH_elev_low_res)
+```
+
+You can change the values of the pixels easily. For example, if you want to change the `BF_elev` raster from its native meters to feet, you can mulitply by 3.28
+```{r}
+ETH_elev_feet <- ETH_elev*3.28
+plot(ETH_elev_feet)
+```
+
+Similarly, you can categorize raster values 
+```{r}
+ETH_elev_categorized <- cut(ETH_elev, 4)
+plot(ETH_elev_categorized)
+```
+
+If a raster is the same resolution and extent, you can perform joint operations on them, for example subtract values of one from another
+```{r}
+new_raster <- ETH_elev - ETH_land_use_resampled # Meaningless! Just for illustrative purposes..
+plot(new_raster)
+```
+
+# Extracting data From rasters
+Now let's extract values of elevation at each survey point. You can use the `extract` function from the raster package and insert the extracted values as a new field on `ETH_malaria_data_SPDF`
+```{r}
+ETH_malaria_data_SPDF$elev <- extract(ETH_elev, ETH_malaria_data_SPDF)
+ETH_malaria_data_SPDF # now has 3 variables
+```
+
+You can also extract values using polygons e.g to get admin 1 level elevations. You just have to define a function to apply, otherwise you get all the pixel values per polygon. For very large rasters, check out the `velox` package.
+```{r}
+ETH_Adm_1$elev <- extract(ETH_elev, ETH_Adm_1, fun=mean, na.rm=TRUE) # takes a little longer..
+```
+
+# Exploratory spatial analysis
+We can now have a quick look at the relationship between prevalence and elevation. First generate a prevalence variable
+```{r}
+ETH_malaria_data_SPDF$prevalence <- ETH_malaria_data_SPDF$pf_pos / ETH_malaria_data_SPDF$examined
+```
+
+Now you can plot the relationship between prevalence and elevation
+```{r}
+plot(ETH_malaria_data_SPDF$elev, ETH_malaria_data_SPDF$prevalence)
+```
+
+You might also be interested in distances to/from other features (e.g. health facilities, water). Here we are going to load up a waterbody layer (obtained via http://www.diva-gis.org/Data) and calculate distance from each point. In this case, the file is in GeoJSON format instead of Shapefile. `readOGR` is able to handle GeoJSON easily. 
+```{r}
+waterbodies <- readOGR("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week2/Lab_files/ETH_waterbodies.geojson")
+waterbodies
+plot(waterbodies)
+```
+
+The goesphere package has some nice functions such as `dist2Line` which calculates distance in meters from spatial data recorded using decimal degrees. Warning: takes a little while to compute
+```{r}
+dist_to_water <- dist2Line(ETH_malaria_data_SPDF, waterbodies)
+```
+
+This produces a matrix, where each row represents each point in `ETH_malaria_data_SPDF` and the first column is the distance in meters to the nearest waterbody
+```{r}
+head(dist_to_water)
+```
+
+
+```{r}
+# Can add to your data frame by extracting the first column
+ETH_malaria_data_SPDF$dist_to_water <- dist_to_water[,1]
+```
+
+
+If the objects you are interested in calucating distance to are points as opposed to polygons/lines (as above) you first have to calculate the distance to every point and then identify the minimum. For example, imagine waterbodies data was only available as a point dataset (we can fake this by calculating the centroid of each polygon)
+```{r}
+waterbodies_points <- gCentroid(waterbodies, byid=TRUE)
+```
+
+Now calucate a distance matrix showing distances between each observation and each waterbody point. the `distm` function creates a distance matrix between every pair of data points and waterbody points in meters.
+```{r}
+dist_matrix <- distm(ETH_malaria_data_SPDF, waterbodies_points)
+```
+
+Then use the apply function to apply the 'minimum' function to each row (as each row represents the distance of 
+every waterbody point from our first observation)
+```{r}
+ETH_malaria_data_SPDF$dist_to_water_point <- apply(dist_matrix, 1, min)
+```
+
+
