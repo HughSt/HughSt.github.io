@@ -2,7 +2,7 @@
 
 # let's load up the data we need
 BF_elev <- raster::getData("alt", country="BF")
-BF_land_use <- raster("https://www.dropbox.com/s/hc9m6ac3kb845ip/BF_land_use.tif?dl=1")
+BF_land_use <- raster("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week2/Lab_files/BF_land_use.tif")
 BF_land_use <- projectRaster(BF_land_use, crs=crs(BF_elev), method="ngb") #reproject
 pop <- raster("https://www.dropbox.com/s/a9glj1is86o0xvz/BF_pop.tif?dl=1")
 
