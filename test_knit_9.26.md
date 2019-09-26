@@ -7,7 +7,7 @@ Week 5 accessing spatial data
 
 This is normal text….
 
-[Here](http::/www.google.com) is a link
+[Here](www.google.com) is a link
 
 HEre is an example of code that runs but isn’t visualized
 
