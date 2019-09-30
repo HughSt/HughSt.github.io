@@ -294,4 +294,17 @@ every waterbody point from our first observation)
 ETH_malaria_data_SPDF$dist_to_water_point <- apply(dist_matrix, 1, min)
 ```
 
+The alternative, much faster, but potentially less accurate method to 'distm', is to use the nn2 function from the RANN package. This allows you to calculate the nearest point from each observation and then you can use the 'distGeo' function from the 'geosphere' package to calculate the distance in meters. The reason this could be inaccurate, is that the nearest point in decimal degrees might not be the nearest in meters as degrees are not a good measure of distance. In most cases, you are probably OK. 
 
+```{r}
+library(RANN)
+library(geosphere)
+
+# Get the index of the waterbody points that are nearest to each observation
+nn <- nn2(waterbodies_points@coords,ETH_malaria_data_SPDF@coords, 
+          k=1)
+          
+# Calculate the distance in meters between each observation and its nearest waterbody point       
+ETH_malaria_data_SPDF$dist_to_water_point <- distGeo(ETH_malaria_data_SPDF@coords,
+        waterbodies_points@coords[nn$nn.idx,])
+```      
