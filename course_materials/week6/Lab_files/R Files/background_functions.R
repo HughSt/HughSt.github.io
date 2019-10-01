@@ -1,4 +1,4 @@
-# Functions needed for the sessions
+# Background functions needed for the R markdown
 
 univariate_lm <- function(n_data=40, seed=1) {
   set.seed(seed)
@@ -28,8 +28,8 @@ random_points <- function(n_points=10, xmax=399, ymax=399, seed=1) {
   return(pattern)
 }
 
-soil_data <- function(n_data = 40, n_peaks=3, seed=1) {
-  "Generate random data of soiliness measurements"
+soil_data <- function(n_data = 40, n_peaks=2, seed=1) {
+  "Generate random data of organic matter measurements"
   set.seed(seed)
   sampled_pts <- as.data.frame(random_points(n_points=n_data, seed=seed))
   peak_values <- as.data.frame(random_points(n_points=n_peaks, seed=seed))
@@ -37,10 +37,10 @@ soil_data <- function(n_data = 40, n_peaks=3, seed=1) {
   r_mat <- pracma::distmat(as.matrix(sampled_pts), as.matrix(peak_values))
   f <- exp(-  .01 * apply(r_mat, FUN=min, MARGIN=1))
   covariate <- runif(length(f), min=-1, max=2)
-  eta <- 4 + covariate + f  + rnorm(n_data, 0, .1)
-  sampled_pts$x <- covariate
-  sampled_pts$soiliness <- exp(eta)
-  return(sampled_pts) 
+  eta <- 4 + .5 * covariate + f  + rnorm(n_data, 0, .1)
+  sampled_pts$humidity <- covariate
+  sampled_pts$OM <- exp(eta)
+  return(sampled_pts)
 }
 
 
