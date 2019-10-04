@@ -8,16 +8,14 @@ permalink: /about/
 
 ![alt text](https://www.dropbox.com/s/3ra4lwmnxdmjhux/IMG_9905_small.png?dl=1 "Hugh Sturrock")
 
-Hugh Sturrock is an Assistant Professor of Epidemiology and Biostatistics at UCSF and is a spatial epidemiologist who's work focuses on tropical diseases.
+Hugh Sturrock is an Associate Professor of Epidemiology and Biostatistics at UCSF and is a spatial epidemiologist who's work focuses on tropical diseases.
 
-![alt text](https://www.dropbox.com/s/3ys75k6z1c13ztj/ricardo.png?dl=1 "Ricardo Andrade-Pacheco")
+![alt text](https://www.dropbox.com/s/z6jwhhxzo36cgcb/ADAM_BENNETT_2.jpeg?dl=1 "Adam Bennett")
+Adam Bennett is an Associate Professor of Epidemiology and Biostatistics at UCSF and is a spatial epidemiologist with a focus on malaria surveillance.
 
-Ricardo Andrade-Pacheco is a Specialist at UCSF and is a spatial statistician working on developing an applying different statistical approaches to solve important public health problems.
+![alt text](https://www.dropbox.com/s/5eec4jbnf51x347/francois.jpg?dl=1 "Francois Rerolle")
 
-![alt text](https://www.dropbox.com/s/odwypgbeacjgg7t/alemayehu.jpg?dl=1 "Alemayehu Mideksa")
+Francois Rerolle is a PhD student in the department of Epidemiology and Biostatistics at UCSF, studying the epidemiology of malaria in high risk population in south-east Asia.
 
-Alemayehu Midekisa is a Specialist at UCSF with particular expertise in remote sensing and GIS. He supports a number of projects and has particular interest in large scale problems solveable using Google Earth Engine.
-
-![alt text](https://www.dropbox.com/s/dgicwzknbcumbil/everleigh.jpg?dl=1 "Everleigh Stokes")
-
-Everleigh Stokes is an MPH student at UCB in Environmental Health Sciences. Everleigh is the Graduate Student Instructor for this course and will be your first point of contact if you have any issues.
+![alt text](https://www.dropbox.com/s/xiwr4ijuxb0h3to/Amanda_Irish.jpg?dl=1 "Amanda Irish")
+Amanda Irish is a PhD student in the department of Epidemiology and Biostatistics at UCSF, studying the relationship between housing and malaria using remotely sensed satellite imagery. 

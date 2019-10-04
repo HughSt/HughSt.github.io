@@ -98,15 +98,15 @@ CaseControl_ppp <- ppp(CaseControl$long, CaseControl$lat,
                        marks=as.factor(CaseControl$case))
 ```
 
-If the 'relative' argument is not included in the code line, then it is technically specified as 'FALSE', because that is the default. The output is, therefore, the probability of being a case. Sigma is the bandwidth.
+If the 'relative' argument is not included in the code line, then it is technically specified as 'FALSE', because that is the default. The output is, therefore, the probability of being a case. You can set sigma (bandwidth), but the default is to use cross-validation to find a common bandwidth to use for cases and controls. See `?bw.relrisk` for more details.
 ```{r}
-risk_est <-  relrisk(CaseControl_ppp, sigma = 0.1) 
+risk_est <-  relrisk(CaseControl_ppp) 
 plot(risk_est)
 ```
 
 However, if you specify relative = TRUE in the code line, then the output is the relative risk, the (probability of being a case, relative to probability of being a control)
 ```{r}
-rel_risk_est <-  relrisk(CaseControl_ppp, relative = TRUE, sigma = 0.1)
+rel_risk_est <-  relrisk(CaseControl_ppp, relative = TRUE)
 plot(rel_risk_est)
 ```
 
@@ -123,7 +123,7 @@ pal <- colorNumeric(palette=tim.colors(64), domain=values(risk_raster), na.color
 Then plot with leaflet
 ```
 leaflet() %>% addTiles("http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png") %>% 
-  addRasterImage(risk_raster, opacity=0.6, col = pal)
+  addRasterImage(risk_raster, opacity=0.6, col = pal) 
 ```
 
 ## Interpolation of point (prevalence etc.) data
@@ -289,3 +289,5 @@ xvalid_result <- xvalid(ETH_malaria_data_geo, model = VarioMod_sph)
 plot(xvalid_result$data,xvalid_result$predicted, asp=1)
 abline(0,1)
 ```
+## Pop quiz
+How could you compare how well IDW performs versus kriging? Which appears to be more accurate?
