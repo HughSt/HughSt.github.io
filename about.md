@@ -10,7 +10,7 @@ permalink: /about/
 
 Hugh Sturrock is an Associate Professor of Epidemiology and Biostatistics at UCSF and is a spatial epidemiologist who's work focuses on tropical diseases.
 
-![alt text](https://www.dropbox.com/s/z6jwhhxzo36cgcb/ADAM_BENNETT_2.jpeg?dl=1 "Adam Bennett")
+![alt text](https://www.dropbox.com/s/z6jwhhxzo36cgcb/ADAM_BENNETT_2.jpeg?dl=1 =100x "Adam Bennett")
 Adam Bennett is an Associate Professor of Epidemiology and Biostatistics at UCSF and is a spatial epidemiologist with a focus on malaria surveillance.
 
 ![alt text](https://www.dropbox.com/s/5eec4jbnf51x347/francois.jpg?dl=1 "Francois Rerolle")
