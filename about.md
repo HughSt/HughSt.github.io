@@ -18,6 +18,6 @@ Adam Bennett is an Associate Professor of Epidemiology and Biostatistics at UCSF
 
 Francois Rerolle is a PhD student in the department of Epidemiology and Biostatistics at UCSF, studying the epidemiology of malaria in high risk population in south-east Asia.
 
-![alt text](https://www.dropbox.com/s/xiwr4ijuxb0h3to/Amanda_Irish.jpg?dl=1 "Amanda Irish")
+![alt text](https://www.dropbox.com/s/brdr9pf66ecgilv/Amanda.jpg?dl=1 "Amanda Irish")
 
 Amanda Irish is a PhD student in the department of Epidemiology and Biostatistics at UCSF, studying the relationship between housing and malaria using remotely sensed satellite imagery. 
