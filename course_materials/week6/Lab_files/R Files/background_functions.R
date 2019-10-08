@@ -34,7 +34,7 @@ soil_data <- function(n_data = 40, n_peaks=2, seed=1) {
   sampled_pts <- as.data.frame(random_points(n_points=n_data, seed=seed))
   peak_values <- as.data.frame(random_points(n_points=n_peaks, seed=seed))
 
-  r_mat <- pracma::distmat(as.matrix(sampled_pts), as.matrix(peak_values))
+  r_mat <- as.matrix(rdist(as.matrix(sampled_pts), as.matrix(peak_values)))
   f <- exp(-  .01 * apply(r_mat, FUN=min, MARGIN=1))
   covariate <- runif(length(f), min=-1, max=2)
   eta <- 4 + .5 * covariate + f  + rnorm(n_data, 0, .1)
