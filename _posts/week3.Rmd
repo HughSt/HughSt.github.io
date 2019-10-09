@@ -221,7 +221,7 @@ VarioCloud<-variog(ETH_malaria_data_geo, option="cloud", max.dist=MaxDist)
 plot(VarioCloud) # all pairwise comparisons
 
 # To make it easier to interpret, we can bin points by distance
-Vario <- variog(ETH_malaria_data_geo, max.dist = MaxDist)
+Vario <- variog(ETH_malaria_data_geo, max.dist = MaxDist, trend = "2nd")
 plot(Vario)
 ```
 
