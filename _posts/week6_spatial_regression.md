@@ -801,4 +801,4 @@ proxy for economic activity/poverty)
 [This](https://forobs.jrc.ec.europa.eu/products/gam/download.php)
 dataset on travel times to nearest large city may also be useful (be
 aware this is a large file). Refer back to week 2 if you want to include
-distance to something (e.g. health facility etc.).
+distance to something (e.g. health facility etc.).                  
