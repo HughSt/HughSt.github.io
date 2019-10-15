@@ -19,10 +19,14 @@ In this session we will introduce some concepts of spatial regression. We will f
 * Cross-Validation
 * Application Example: Malaria Case
 
-Besides the code displayed here, we will use some additional code to generate some toy datasets that will help illustrate the exposition. Before starting we will load these code as well as the ggplot2 library, which will be used for creating most of the images displayed.
+Besides the code displayed here, we will use some additional code to generate some toy datasets that will help illustrate the exposition. Before starting we will load these code as well as the other required libraries, including ggplot2 which will be used for creating most of the images displayed.
 ```{r preliminary, echo=TRUE}
-source("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week6/Lab_files/R%20Files/background_functions.R")
 library(ggplot2)
+library(fields)
+library(raster)
+library(sp)
+library(spaMM)
+source("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week6/Lab_files/R%20Files/background_functions.R")
 ```
 
 ## Linear Regression Models
@@ -207,17 +211,17 @@ The core idea behind Spatial Statistics is to understand an characterize this sp
 
 When want to measure how much two variables change together, we use the covariance function. Under the right assumptions, we can also use the covariance function to describe the similarity of the observed values based on their location.
 
-A covariance function \(K: \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{R}\) maps a pair of points \(z_1 = (s_{[1,1]}, s_{[1,2]})\) and \(z_2 = (s_{[2,1]}, s_{[2,2]})\) to the real line. We can define such a function in terms of the distance between a pair of points. Let the distance between the points be given by \(r = \|z_{1} - z_{2} \|\), the following are examples of covarinace functions:
+A covariance function *K* : 𝕊 × 𝕊 → ℝ maps a pair of points *z*<sub>1</sub> = (*s*<sub>\[1, 1\]</sub>, *s*<sub>\[1, 2\]</sub>) and *z*<sub>2</sub> = (*s*<sub>\[2, 1\]</sub>, *s*<sub>\[2, 2\]</sub>) to the real line. We can define such a function in terms of the distance between a pair of points. Let the distance between the points be given by *r* = ∥*z*<sub>1</sub> − *z*<sub>2</sub>∥, the following are examples of covarinace functions:
 
-Exponentiated Quadratic: \(K(z_{1}, z_{2} )  = \sigma^2  \exp ( -r^2 / \ell^2 )  \)
+Exponentiated Quadratic: *K*(*z*<sub>1</sub>, *z*<sub>2</sub>)=*σ*<sup>2</sup>exp(−*r*<sup>2</sup>/*ρ*<sup>2</sup>)
 
-Rational Quadratic: \(K(z_{1}, z_{2} )  = \sigma^2 ( 1 + r^2/(2\alpha \ell^2) )^{-\alpha} \) 
+Rational Quadratic: *K*(*z*<sub>1</sub>, *z*<sub>2</sub>)=*σ*<sup>2</sup>(1 + *r*<sup>2</sup>/(2*α**ρ*<sup>2</sup>))<sup>−*α*</sup>
 
-Matern Covariance: \(K(z_{1}, z_{2} )  = \sigma^2 2^{1-\nu}/\Gamma(\nu) ( (2 \nu)^{.5} r/\ell )^{\nu} \mathcal{K}_\nu ( (2\nu)^{.5} r/\ell )  \)
+Matern Covariance: *K*(*z*<sub>1</sub>, *z*<sub>2</sub>)=*σ*<sup>2</sup>2<sup>1 − *ν*</sup>/*Γ*(*ν*)((2*ν*)<sup>.5</sup>*r*/*ρ*)<sup>*ν*</sup>𝒦<sub>*ν*</sub>((2*ν*)<sup>.5</sup>*r*/*ρ*)
 
-The quantities \(\ell, \alpha, \nu\) are parameters of the functions mentioned and \(\mathcal{K}_\nu\) is the modified Bessel function of second kind. In the three cases, while less clear in the Matern case, the covariance decreases asymptotically towards zero the larger the value of \(r\). This is the more distance between a pair of points, the weaker the covariance between them.
+The quantities *ρ*, *α*, *ν* are parameters of the functions mentioned and 𝒦<sub>*ν*</sub> is the modified Bessel function of second kind. In the three cases, while less clear in the Matern case, the covariance decreases asymptotically towards zero the larger the value of *r*. This is the more distance between a pair of points, the weaker the covariance between them.
 
-The election of which covariance function to use depends on our assumptions about the change in the association between the points across space (eg., the speed of decay).  
+The election of which covariance function to use depends on our assumptions about the change in the association between the points across space (eg., the speed of decay). 
 
 ## Geostatistics
 
@@ -237,6 +241,7 @@ m4 <- spaMM::fitme(OM ~ humidity + Matern(1|lng+lat), data=spatial_reg, family=g
 
 summary(m4)
 ```
+`nu` (*ν*) represents the 'smoothness' parameter and `rho` (ρ) the scale parameter. `lambda` is the estimated variance in the random effect and `phi` the estimated variance in the residual error.
 
 In the next figure, we will show the spatial effect by predicting the values of organic matter across space with a fixed level of humidity.
 ```{r spatial_grid}
@@ -339,111 +344,84 @@ Clearly the geostatisc model showed a better performance than a 1st order surfac
 
 ## Application Example: Malaria Case
 
-Now we will estimate the prevalence of malaria in Ethiopia, using data from 2009.
+Now we will estimate the prevalence of malaria in Oromoia State, Ethiopia, using data from 2009.
 We have used this dataset in previous sessions.
 This survey data contains information about number of positive cases and number of examined people in different schools. Spatial information is encoded in the fields *longitude* and *latitude*. To represent this data we can use a Binomial likelihood, that models number of successes out of a number of trials.
-```{r malaria_eth_data}
+```{r ETH_malaria_data_data}
 # Load data
-malaria_eth <- read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week6/Lab_files/Data/mal_data_w_covs.csv") # Case data
+ETH_malaria_data <- read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week1/Lab_files/Data/mal_data_eth_2009_no_dups.csv", header=T) # Case data
 ETH_Adm_1 <- raster::getData("GADM", country="ETH", level=1) # Admin boundaries
-
+Oromia <- subset(ETH_Adm_1, NAME_1=="Oromia")
 # Plot both country and data points
-raster::plot(ETH_Adm_1)
-points(malaria_eth$longitude, malaria_eth$latitude,
+raster::plot(Oromia)
+points(ETH_malaria_data$longitude, ETH_malaria_data$latitude,
        pch = 16, ylab = "Latitude", xlab="Longitude", col="red", cex=.5)
 ```
 
-The data points in the survey provide us information to learn a rule of how prevalence changes across the country. However, if we want to make a map of the disease prevalence of the whole country we need a set of points that covers all the territory. Then, once we have fitted a model to the survey data, we can predict a these new set of points. To generate a grid of points inside the polygon of the country, we can use the following code.
-```{r eth_grid}
-# Random grid
-s_grid <- sp::spsample(ETH_Adm_1, n = 3000, type = "regular")@coords
+To model and predict malaria prevalence across Oromia State, we need to first obtain predictors as rasters at a common resolution/extent. In this example, we are going to use two of the [Bioclim](https://www.worldclim.org/bioclim) layers, accessible using the `getData` function in the raster package. 
 
-# Plot both country and data points
-raster::plot(ETH_Adm_1)
-points(s_grid[,1], s_grid[,2], pch=16, cex=.5, col="blue")
-
+```{r}
+bioclim_layers <- getData('worldclim', var='bio', res=0.5, lon=38.7578, lat=8.9806) # lng/lat for Addis Ababa
+```
+We can crop these layers to make them a little easier to handle
+```{r}
+bioclim_layers_oromia <- crop(bioclim_layers, Oromia)
+plot(bioclim_layers_oromia[[1]]) # Bio1 - Annual mean temperature
+lines(Oromia)
 ```
 
-Here we will not use the object *s_grid* defined above, but a dataset (generated in a similar way) for which we also have a set of bioclimatic covariates obtained from https://www.worldclim.org/bioclim. Note that de dataset *malaria_eth* also has the same covariates defined for the points in the survey. 
-```{r eth_covs}
-# Random grid
-grid_eth <- read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week6/Lab_files/Data/eth_grid_w_covs.csv")
-
-# Plot both country and data points
-head(grid_eth)
+Now let's extract Bio1 (Annual mean temperature) and Bio12 (Annual precipitation) at the observation points
+```{r}
+ETH_malaria_data$bioclim1 <- extract(bioclim_layers_oromia[[1]], ETH_malaria_data[,c("longitude", "latitude")])
+ETH_malaria_data$bioclim12 <- extract(bioclim_layers_oromia[[12]], ETH_malaria_data[,c("longitude", "latitude")])
 ```
 
-Below we have a map of the bioclimatic variables in the country.
-```{r grid_data}
-
-# Make grid (for plotting purposes)
-layer_names <- colnames(grid_eth)[3:8]
-plt_covs <- list()
-for (i in 1:6) {
-  # One plot per variable
-  min_val = round(min(grid_eth[, c(layer_names[i])])) + 1
-  max_val = round(max(grid_eth[, c(layer_names[i])])) - 1
-  
-  plt_covs[[i]] <- ggplot(grid_eth, aes(longitude, latitude)) + geom_raster(aes_string(fill=layer_names[i])) +
-    viridis::scale_fill_viridis(option="plasma", na.value="darkblue",
-                                breaks=c(min_val, max_val), labels=c(min_val, max_val)) +
-    coord_fixed(ratio=1) + theme_void() +
-    theme(legend.position = "bottom", legend.title = element_blank()) 
-}
-
-# Put all plots together
-cowplot::ggdraw(xlim = c(0,15), ylim = c(0,10)) +
-  cowplot::draw_plot(plt_covs[[1]], x = 0, y = 5, width = 5, height = 5) +
-  cowplot::draw_plot(plt_covs[[2]], x = 5, y = 5, width = 5, height = 5) +
-  cowplot::draw_plot(plt_covs[[3]], x = 10, y = 5, width = 5, height = 5) +
-  cowplot::draw_plot(plt_covs[[4]], x = 0, y = 0, width = 5, height = 5) +
-  cowplot::draw_plot(plt_covs[[5]], x = 5, y = 0, width = 5, height = 5) +
-  cowplot::draw_plot(plt_covs[[6]], x = 10, y = 0, width = 5, height = 5) +
-  cowplot::draw_plot_label(layer_names, x=rep(c(0, 5, 10), 2), y = c(rep(10, 3), rep(5, 3)))
+Now we fit the model without a spatial effect
+```{r}
+prev_eth_non_spatial <- spaMM::fitme(cbind(pf_pos, examined - pf_pos) ~ bioclim1 + bioclim12, data=ETH_malaria_data, family=binomial())
+summary(prev_eth_non_spatial)
 ```
 
-Now we fit the model, as we saw in the before.
-```{r malaria_eth_model}
-prev_eth <- spaMM::fitme(cbind(pf_pos, examined - pf_pos) ~ bioclim1 + bioclim4 + bioclim15 + elev_m + dist_to_water_m + Matern(1|latitude+longitude), data=malaria_eth, family=binomial())
+And take a look at spatial autocorrelation in the residuals
+```{r}
+# Compute correlogram of the residuals
+nbc <- 10
+cor_r <- pgirmess::correlog(coords = ETH_malaria_data[,c("longitude", "latitude")],
+                            z = residuals(prev_eth_non_spatial),
+                            method="Moran", nbclass=nbc)
+# Take a look
+cor_r
+
+# Plot correlogram
+correlograms <- as.data.frame(cor_r)
+correlograms$variable <- "residuals_glm" 
+
+ggplot(subset(correlograms, variable=="residuals_glm"), aes(dist.class, coef)) + 
+  geom_hline(yintercept = 0, col="grey") +
+  geom_line(col="steelblue") + 
+  geom_point(col="steelblue") +
+  xlab("distance") + 
+  ylab("Moran's coefficient")+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+```
+
+There does appear to be residual spatial autocorrelation, so let's fit a spatial model.
+
+```{r ETH_malaria_data_model}
+prev_eth <- spaMM::fitme(cbind(pf_pos, examined - pf_pos) ~ bioclim1 + bioclim12 + Matern(1|latitude+longitude), data=ETH_malaria_data, family=binomial())
 summary(prev_eth)
 ```
 
-Finally, we will display a map of the predicted prevalence values in the grid. On the left we have the prevalence estimates and on the right we have the logit of the predicted prevalence. We are plotting the logit, becouse this is the link funciton used in our model. On the logit-scale the spatial changes or the predicted values are more evident.
-```{r bf_map}
-# Make predictions at the points in the grid
-grid_eth$prevalence <- predict(prev_eth, newdata = grid_eth, type="response")[,1]
-grid_eth$logit_prev <- log(grid_eth$prevalence/(1 - grid_eth$prevalence))
-
-# Plot of prevalence
-min_val = round(min(grid_eth[, c("prevalence")]), 4) + .0001
-max_val = round(max(grid_eth[, c("prevalence")]), 4) - .0001
-plt_1 <- ggplot(grid_eth, aes(longitude, latitude)) + 
-  geom_raster(aes(fill= prevalence)) +
-  viridis::scale_fill_viridis(option="plasma", na.value="darkblue", 
-                              breaks=c(min_val, max_val), labels=c(min_val, max_val)) +
-  coord_fixed(ratio=1) + theme_void() +
-  theme(legend.position = "bottom")
-
-# Plot of linear predictor
-min_val = round(min(grid_eth[, c("logit_prev")]), 2) + .01
-max_val = round(max(grid_eth[, c("logit_prev")]), 2) - .01
-plt_2 <- ggplot(grid_eth, aes(longitude, latitude)) + 
-  geom_raster(aes(fill= logit_prev)) +
-  viridis::scale_fill_viridis(option="plasma", na.value="darkblue", 
-                              breaks=c(min_val, max_val), labels=c(min_val, max_val)) +
-  coord_fixed(ratio=1) + theme_void() +
-  theme(legend.position = "bottom")
-
-# Show both plots
-cowplot::ggdraw(xlim = c(0,10), ylim = c(0,5)) +
-  cowplot::draw_plot(plt_1, x = 0, y = 0, width = 5, height = 5) +
-  cowplot::draw_plot(plt_2, x = 5, y = 0, width = 5, height = 5)
+We can generate a quick scatter plot of observed vs fitted values
+```{r}
+plot(ETH_malaria_data$pf_pr, predict(prev_eth))
+abline(0,1)
 ```
 
+We have two bioclimatic variables. Are we sure we need these in the model? If not, how to decide which one(s) we should remove?
 
-We have six bioclimatic variables. Are we sure we need all of them in the model? If not, how to decide which one(s) we should remove?
-
-We will do 5-fold cross-validation using this the mean squared error as performance metric. The function below will compute the mean square error across all folds. This function takes as input a dataset, an R formula object (that tells which covariates are used in the model) and a list of indices that describes the data splitting k folds.
+In this case, we are particularly interested in prediction, i.e. predicting prevalence values at un-surveyed locations. So, we will do 5-fold cross-validation using the mean squared error as performance metric. The function below will compute the mean square error across all folds. This function takes as input a dataset, an R formula object (that tells which covariates are used in the model) and a list of indices that describes the data splitting k folds.
 ```{r cv_eth}
 # Function to compute a cross-validated MSE score
 cv_eth <- function(data, spamm_formula, ix_test_list) {
@@ -462,16 +440,17 @@ cv_eth <- function(data, spamm_formula, ix_test_list) {
 As we saw above, to split the data into folds we call the command
 ```{r cv_eth_folds}
 # Define 5 folds
-ix = caret::createFolds(malaria_eth$pf_pos, k = 5)
+ix = caret::createFolds(ETH_malaria_data$pf_pos, k = 5)
 ```
 
 The procedure we will follow to choose the variables to include in the model is know as Backward Selection.
 We start with a model that contains all variables and compute the CV-MSE. We then remove one variable at a time, refit the model and compute the CV-MSE. If the best of these new models  (with one less variable) outperforms the model with all variables, then select this new model as the optimal. Hence we will have decided which variable to remove. Afterwards we repeat the same proceedure removing a new variable from the ones that are still included in the new model.
 The code to carry on the Backward Selection method is below.
 ```{r backwards_selection}
+layer_names <- c("bioclim1", "bioclim12")
 formula_kern <- "cbind(pf_pos, examined - pf_pos) ~ Matern(1|latitude+longitude)"
 formula_model <- paste(c(formula_kern, layer_names), collapse = " + ")
-scores <- c(cv_eth(malaria_eth, as.formula(formula_model), ix))
+scores <- c(cv_eth(ETH_malaria_data, as.formula(formula_model), ix))
 # Simpler model
 num_covariates <- length(layer_names)
 max_covariates <- num_covariates - 1
@@ -484,7 +463,7 @@ while (num_covariates > max_covariates) {
   for (i in 1:nrow(ix_subsets)) {
     cov_subset <- layer_names[ix_subsets[i,]]
     formula_model <- paste(c(formula_kern, cov_subset), collapse = " + ")
-    scores_iter <- c(scores_iter, cv_eth(malaria_eth, as.formula(formula_model), ix))
+    scores_iter <- c(scores_iter, cv_eth(ETH_malaria_data, as.formula(formula_model), ix))
   }
   best <- which.min(scores_iter)
   indices <- ix_subsets[best, ]
@@ -500,14 +479,55 @@ while (num_covariates > max_covariates) {
 
 ```
 
-Here is a summary of the results. The covariates are indexed as: 1 elevation, 2 distance to water, 3 bioclim1, 4 bioclim4, 5 bioclim12 and 6 bioclim15.
+Here is a summary of the results. The covariates are indexed as: 1 - bioclim1, 2 - bioclim12.
 ```{r backwards_selection_results}
 print(board)
 ```
-According to this results the best model according to the lowest MSE is achieved when using only variables 3 and 4, this is bioclim1 and bioclim4.
+According to this results the best model according to the lowest MSE is achieved when using both bioclim1 and bioclim12.
+
+### Prediction
+Now we have a model that relates our climatic layers to prevalence, we can predict the probability/prevalence of infection at any location within the region our data are representative where we have values of these climatic layers. It is possible to predict from a model directly onto a raster stack of covariates which makes life easy. However, in this case, we are using a geostatistical model, which includes latitude and longitude, and therefore we need to generate rasters of these to add to the stack of bioclim1 and bioclim12.
+```{r}
+# Create an empty raster with the same extent and resolution as the bioclimatic layers
+latitude_raster <- longitude_raster <-raster(nrows = nrow(bioclim_layers_oromia[[1]]),
+                                       ncols = ncol(bioclim_layers_oromia[[1]]),
+                                                    ext = extent(bioclim_layers_oromia[[1]]))
+
+# Change the values to be latitude and longitude respectively
+longitude_raster[] <- coordinates(longitude_raster)[,1]
+latitude_raster[] <- coordinates(latitude_raster)[,2]
+
+# Now create a final prediction stack of the 4 variables we need
+pred_stack <- stack(bioclim_layers_oromia[[c(1,12)]],
+                    longitude_raster,
+                    latitude_raster)
+
+# Rename to ensure the names of the raster layers in the stack match those used in the model
+names(pred_stack) <- c("bioclim1", "bioclim12", "longitude", "latitude")
+plot(pred_stack)
+```
+
+Now we have a stack of rasters of the 4 variables used in the model at the same resolution and extent, we can run the `predict` function on the stack to produce a raster of preditions.
+
+```{r}
+predicted_prevalence_raster <- predict(pred_stack, prev_eth)
+plot(predicted_prevalence_raster)
+lines(Oromia)
+
+# If you want to clip the predictions to Oromia
+predicted_prevalence_raster_oromia <- mask(predicted_prevalence_raster, Oromia)
+plot(predicted_prevalence_raster_oromia)
+```
+
 
 ## Conclusion
 
 In this session we learnt the basic concepts of spatial regression. We saw how the spatial covariance is an essential component of a spatial model. By encoding the spatial association into a kernel function, a geostatistic model outperforms linear models even when they include a polynomial representation of the observations coordinates. When properly accounting for the spatial structure of the data, the residuals of the model are independent.
 
 We also reviewed the concept of cross-validation as a means to select model. In particular we saw how it can help determine which covariates to include in the model.
+
+## Pop quiz
+Try adding elevation, land cover and one other variable to the model to see whether these improve the predictive accuracy. Remember to ensure your covariates are the same extent and resolution. Also, if you are using a categorical variable, like land cover, you have to ensure that all categories present in the prediction raster are included in the model. i.e. you can't make a prediction in a 'desert' pixel if none of your observations were made in 'desert'. 
+
+## Assignment
+Using [this](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week6/assignment/Data/BCG_vaccination_UGA.csv) dataset of BCG vaccination prevalence in Uganda in 2016, fit a model and generate maps of predicted prevalence of vaccination. Ensure that you check for residual spatial autocorrelation. Among other variables, you might be interested in using nighttime light intensity (often used as a proxy for economic activity/poverty) [this](https://geodata.globalhealthapp.net/). [This](https://forobs.jrc.ec.europa.eu/products/gam/download.php) dataset on travel times to nearest large city may also be useful (be aware this is a large file). Refer back to week 2 if you want to include distance to something (e.g. health facility etc.). 
