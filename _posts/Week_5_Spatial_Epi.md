@@ -1,8 +1,5 @@
----
-layout: post
-title: Week 5 - Accessing spatial datasets
-featured-img: LULC
----
+Week 5 - Accessing spatial datasets
+================
 
 ------------------------------------------------------------------------
 
@@ -13,7 +10,7 @@ featured-img: LULC
 
 ##### *Welcoming quizz: Remember that figure? Tell me more about it!*
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/first_second_trend.png)
+![](/Users/francoisrerolle/Downloads/first_second_trend.png)
 
 ------------------------------------------------------------------------
 
@@ -67,7 +64,7 @@ leaflet() %>% # Plot
               label = ETH_Adm_1$NAME_1)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
 # Elevation (meters)
@@ -86,7 +83,7 @@ leaflet() %>% # Plot
             pal = raster_colorPal_elev) 
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-3-2.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-3-2.png)
 
 ------------------------------------------------------------------------
 
@@ -130,7 +127,7 @@ leaflet() %>% # Plot
             pal = raster_colorPal_elev_unmasked) 
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 As you vary the 'name' option to access environmental variable, pay particular attention to the geolocalisation options. For instance, at the 2.5 resolution (minutes of a degree), there is no need for location specification but at the 0.5 resolution, need to provide 'lon' and 'lat' arguments...
 
@@ -198,7 +195,7 @@ leaflet() %>% # Plot
   addLayersControl(overlayGroups = c("October precipitation (mm)"))
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 ``` r
 leaflet() %>% # Plot
@@ -227,7 +224,7 @@ leaflet() %>% # Plot
   hideGroup("South Sudan")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-7-2.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-7-2.png)
 
 ##### *Pop quiz: how would you get the 0.5 resolution October precipitation for South Sudan?*
 
@@ -273,7 +270,7 @@ leaflet() %>% # Plot
             pal = raster_colorPal_prec_SSD)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ##### *In class assignement: map the 1 (minute of a degree) resolution January precipitation for Kenya in inches?*
 
@@ -300,7 +297,7 @@ Download the precipitation WorldClim variable at 10' resolution available [here]
 
 ``` r
 # Path to wc2 folder you just downloaded
-path_to_wc2_folder <- "https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files"
+path_to_wc2_folder <- "/Users/francoisrerolle/Downloads"
 
 # List files in folder downloaded
 list.files(path = paste0(path_to_wc2_folder, "/wc2"))
@@ -338,7 +335,7 @@ wc2_prec_10_Oct
     ## resolution : 0.1666667, 0.1666667  (x, y)
     ## extent     : -180, 180, -90, 90  (xmin, xmax, ymin, ymax)
     ## crs        : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
-    ## source     : https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/wc2/wc2.0_10m_prec_10.tif 
+    ## source     : /Users/francoisrerolle/Downloads/wc2/wc2.0_10m_prec_10.tif 
     ## names      : wc2.0_10m_prec_10 
     ## values     : 0, 2328  (min, max)
 
@@ -371,7 +368,7 @@ leaflet() %>% # Plot
   hideGroup("WorldClim.com download")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ``` r
 # Another more elegant way to read in the data downloaded online
@@ -397,13 +394,13 @@ wc2_prec_10[[10]]
     ## resolution : 0.1666667, 0.1666667  (x, y)
     ## extent     : -180, 180, -90, 90  (xmin, xmax, ymin, ymax)
     ## crs        : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
-    ## source     : https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/wc2/wc2.0_10m_prec_10.tif 
+    ## source     : /Users/francoisrerolle/Downloads/wc2/wc2.0_10m_prec_10.tif 
     ## names      : wc2.0_10m_prec_10 
     ## values     : 0, 2328  (min, max)
 
 For instance, for my first dissertation paper, I was looking for deforestation data. I was familiar with the work from Hansen et al. [High-Resolution Global Maps of 21st-Century Forest Cover Change](https://science.sciencemag.org/content/342/6160/850) and there associated [website](https://earthenginepartners.appspot.com/science-2013-global-forest/download_v1.2.html). To download deforestation data over Lao PDR, you have to pick the appropriate tile (s), download, import and process in R.
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/Hansen_Download.png)
+![](/Users/francoisrerolle/Downloads/Hansen_Download.png)
 
 After reading the author's paper, supplementary materials and website instructions several times, I still couldn't make sense of their data. I eventually found a R package [gfcanalysis](http://azvoleff.com/articles/analyzing-forest-change-with-gfcanalysis/) designed specifically to analyze this dataset and started believing again! Althought it greatly helped me understand the raw data, I ended up not using the package because of simplifying assumptions they were making about the data.
 
@@ -448,9 +445,9 @@ ETH_land_use <- raster::raster("https://github.com/HughSt/HughSt.github.io/blob/
 plot(ETH_land_use)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/GlobalCover.png)
+![](/Users/francoisrerolle/Downloads/GlobalCover.png)
 
 ``` r
 waterbodies <- rgdal::readOGR("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week2/Lab_files/ETH_waterbodies.geojson")
@@ -467,19 +464,19 @@ leaflet() %>% # Plot
   addPolylines(data = waterbodies)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ------------------------------------------------------------------------
 
 ### **Remote sensing data**
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/NASA.png)
+![](/Users/francoisrerolle/Downloads/NASA.png)
 
 Satellites orbiting around the globe carry instruments to take measurements. Just likes our eyes or cameras, the sensors onboard satellites receive a radiation that was emitted by a source of light (sun, flash, light bulb, etc...) and reflected by an object. The differences between the pre and post reflection radiations characterize properties of the reflecting object such as color for which our eyes have been optimized to perceive. You can picture the radiation as a wave signal. Speed radars and the SRTM mission act in the same way (except they also send the incident radiation) and from the difference in the 2 wave signals calculate speed and elevation respectively.
 
 Speed, elevation, color are calculated based on the wavelengths property of the wave. Sensors onboard remote sensing satelitte mission can receive multiple waves across the spectrum.
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/Spectrum.png)
+![](/Users/francoisrerolle/Downloads/Spectrum.png)
 
 For instance the satellite Landsat-8 has 11 bands (i.e wavelengths ranges) at which it measures the reflectance (fraction of incident electromagnetic power that is reflected) which we can simply see as a measure of 'light' intensity reflected by the earth surface.
 
@@ -532,7 +529,7 @@ plot(Landsat_Band_4, main = "Red", col = gray(0:100 / 100))
 plot(Landsat_Band_5, main = "NIR", col = gray(0:100 / 100))
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 ##### *Pop quiz: what do you think is in the top right corner of our spatial extent?*
 
@@ -549,7 +546,7 @@ raster::plotRGB(x = Landsat_Band,
                 main = "Landsat True Color Composite")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 The true-color composite reveals much more about the landscape than the earlier gray images. Another popular image visualization method in remote sensing is known “false color” image in which NIR, red, and green bands are combined. This representation is popular as it makes it easy to see the vegetation (in red).
 
@@ -562,7 +559,7 @@ raster::plotRGB(x = Landsat_Band,
                 main = "Landsat False Color Composite")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 ------------------------------------------------------------------------
 
@@ -576,7 +573,7 @@ Plot of reflection in the ultra-blue wavelength against reflection in the blue w
 raster::pairs(x = Landsat_Band[[1:2]], main = "Ultra-blue versus Blue")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 Plot of reflection in the red wavelength against reflection in the NIR wavelength.
 
@@ -584,7 +581,7 @@ Plot of reflection in the red wavelength against reflection in the NIR wavelengt
 raster::pairs(x = Landsat_Band[[4:5]], main = "Red versus NIR")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 The first plot reveals high correlations between the blue wavelength regions. Because of the high correlation, we can just use one of the blue bands without losing much information. The distribution of points in second plot (between NIR and red) is unique due to its triangular shape. Vegetation reflects more in the NIR range than in the red and creates the upper corner close to NIR (y) axis. Water absorbs energy from all the bands and occupies the location close to origin. The furthest corner is created due to highly reflecting surface features like bright soil or concrete.
 
@@ -676,7 +673,7 @@ library(ggplot2)
 ggplot2::ggplot(data = LULC_Mean_Reflectance_Long, mapping = aes(x = Band, y = Reflectance, color = LULC, group = LULC)) + geom_line()
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 The spectral profiles show (dis)similarity in the reflectance of different features on the earth’s surface (or above it). ‘Water’ shows relatively low reflection in all wavelengths, while all other classes have relatively high reflectance in the longer wavelengts. Remember though that our training data only has 1000 points across 6 LULC classes only have a few observation for 3 of those classes.
 
@@ -749,7 +746,7 @@ leaflet() %>% # Plot
   addLayersControl(overlayGroups = c("Predicted LULC"))
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](Week_5_Spatial_Epi_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 ------------------------------------------------------------------------
 
@@ -757,7 +754,7 @@ leaflet() %>% # Plot
 
 Now you have a sense of how remote sensing can be used to produce all sort of environmental layers. The quality of those will depend on the spatial and temporal resolutions of the sensors as well as the techniques used to process the raw data (clouds?) and model it to produce more useful layers.
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_Spatial_Epi_files/Hagibis.jpg)
+![](/Users/francoisrerolle/Downloads/Hagibis.jpg)
 
 ------------------------------------------------------------------------
 
