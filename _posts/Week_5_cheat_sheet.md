@@ -59,7 +59,7 @@ leaflet() %>% # Plot
             pal = raster_colorPal_prec_KEN)
 ```
 
-![](Week_5_cheat_sheet_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_cheat_sheet_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 In class assignment
     2
@@ -110,7 +110,7 @@ In class assignment
                    popup = ~fclass,
                    label = ~fclass)
 
-![](Week_5_cheat_sheet_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_cheat_sheet_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
     ## Loading required package: sp
 
@@ -122,4 +122,4 @@ In class assignment
     ## It has 10 fields
     ## Integer64 fields read as strings:  layer
 
-![](Week_5_cheat_sheet_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_cheat_sheet_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
