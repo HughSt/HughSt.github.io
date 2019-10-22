@@ -516,7 +516,7 @@ lines(Oromia)
 
 # If you want to clip the predictions to Oromia
 predicted_prevalence_raster_oromia <- mask(predicted_prevalence_raster, Oromia)
-plot(predicted_prevalence_raster_oromia)
+plot(log(predicted_prevalence_raster_oromia), col = map_palette("bruiser", 20))
 ```
 
 
