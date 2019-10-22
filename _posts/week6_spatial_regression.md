@@ -25,9 +25,55 @@ images displayed.
 ``` r
 library(ggplot2)
 library(fields)
+```
+
+    ## Loading required package: spam
+
+    ## Loading required package: dotCall64
+
+    ## Loading required package: grid
+
+    ## Spam version 2.1-4 (2018-04-12) is loaded.
+    ## Type 'help( Spam)' or 'demo( spam)' for a short introduction 
+    ## and overview of this package.
+    ## Help for individual functions is also obtained by adding the
+    ## suffix '.spam' to the function name, e.g. 'help( chol.spam)'.
+
+    ## 
+    ## Attaching package: 'spam'
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     backsolve, forwardsolve
+
+    ## Loading required package: maps
+
+    ## See www.image.ucar.edu/~nychka/Fields for
+    ##  a vignette and other supplements.
+
+``` r
 library(raster)
+```
+
+    ## Loading required package: sp
+
+``` r
 library(sp)
 library(spaMM)
+```
+
+    ## spaMM (version 3.0.0) is loaded.
+    ## Type 'help(spaMM)' for a short introduction,
+    ## and news(package='spaMM') for news.
+
+    ## 
+    ## Attaching package: 'spaMM'
+
+    ## The following object is masked from 'package:fields':
+    ## 
+    ##     Matern
+
+``` r
 source("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week6/Lab_files/R%20Files/background_functions.R")
 ```
 
@@ -801,4 +847,4 @@ proxy for economic activity/poverty)
 [This](https://forobs.jrc.ec.europa.eu/products/gam/download.php)
 dataset on travel times to nearest large city may also be useful (be
 aware this is a large file). Refer back to week 2 if you want to include
-distance to something (e.g. health facility etc.).                  
+distance to something (e.g. health facility etc.).
