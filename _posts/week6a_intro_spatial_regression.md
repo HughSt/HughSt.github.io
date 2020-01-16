@@ -1,9 +1,3 @@
----
-layout: post
-title: Week 6 - Spatial regression
-featured-img: risk_oromia
----
-
 Introduction to spatial regression
 ================
 
@@ -94,7 +88,7 @@ dset1$y_lwr <- m1_pred[,2]
 dset1$y_upr <- m1_pred[,3]
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/plt_lm-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/plt_lm-1.png)<!-- -->
 
 ### Univariate GLM
 
@@ -129,7 +123,7 @@ ggplot(data=subset(dset2), aes(x, y)) +
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/glm-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/glm-1.png)<!-- -->
 
 A solution to this problem is to use *generalized linear models* (GLM).
 A GLM uses a transformation on \(Y\) where the assumptions of the
@@ -138,11 +132,11 @@ to the original scale of \(Y\) and makes predictions. For example, as
 our outcome is a probability, we can use the common ‘logit’
 transformation, also known as log odds, calculated as log(p/(1-p)) where
 p is the probability of infection.
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/plt_logit-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/plt_logit-1.png)<!-- -->
 
 When fitting a GLM to the dataset shown in the second example above, the
 resulting predictions draw a curve that never reaches zero.
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/glm_quasibinomial-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/glm_quasibinomial-1.png)<!-- -->
 
 Similarly, we can use the GLM framework to model other non-continuous
 outcomes. These include binary outcomes (i.e. 0 and 1), multi-class
@@ -173,7 +167,7 @@ points(ETH_malaria_data$longitude, ETH_malaria_data$latitude,
        pch = 16, ylab = "Latitude", xlab="Longitude", col="red", cex=.5)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/ETH_malaria_data_data-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/ETH_malaria_data_data-1.png)<!-- -->
 
 To model and predict malaria prevalence across Oromia State, we need to
 first obtain predictors as rasters at a common resolution/extent. In
@@ -194,7 +188,7 @@ plot(bioclim_layers_oromia[[1]]) # Bio1 - Annual mean temperature
 lines(Oromia)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 Now let’s extract Bio1 (Annual mean temperature) and Bio2 (Mean Diurnal
 Range (Mean of monthly (max temp - min temp))) at the observation
@@ -318,7 +312,7 @@ observations.
 ggplot() + geom_point(aes(glm_mod_2$fitted, ETH_malaria_data$pf_pr))
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/fitted_v_observed-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/fitted_v_observed-1.png)<!-- -->
 
 Our fitted values don’t line up particularly well with the observed
 data, suggesting that bioclim2 alone doesn’t explain prevalence very
@@ -375,7 +369,7 @@ predicted_risk <- predict(pred_raster,
 plot(predicted_risk)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/prediction-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/prediction-1.png)<!-- -->
 
 ``` r
 # or masked to Oromia
@@ -383,7 +377,7 @@ predicted_risk_masked <- mask(predicted_risk, Oromia)
 plot(predicted_risk_masked)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/prediction-2.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/prediction-2.png)<!-- -->
 
 One of the assumptions we make when fitting GLMs is that the residuals
 of the model (i.e. what isn’t explained by the covairates) are
@@ -440,7 +434,7 @@ ggplot(subset(correlograms, variable=="residuals_glm"), aes(dist.class, coef)) +
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 OK, so we’ve established that our model violates the assumptions of a
 GLM. This leads to the next
@@ -652,7 +646,7 @@ names(pred_stack) <- c("bioclim2", "longitude", "latitude")
 plot(pred_stack)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 Now we have a stack of rasters of the 4 variables used in the model at
 the same resolution and extent, we can run the `predict` function on the
@@ -665,7 +659,7 @@ plot(predicted_prevalence_raster)
 lines(Oromia)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 # If you want to clip the predictions to Oromia
@@ -673,7 +667,7 @@ predicted_prevalence_raster_oromia <- mask(predicted_prevalence_raster, Oromia)
 plot(predicted_prevalence_raster_oromia)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
 
 #### Model validation
 
@@ -702,7 +696,7 @@ predictions_validation <- predict(glm_mod_2_spatial_validation, ETH_malaria_data
 ggplot() + geom_point(aes(as.vector(predictions_validation), ETH_malaria_data_valid$pf_pr))
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](week6a_intro_spatial_regression_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 # Calculate mse
@@ -776,4 +770,3 @@ proxy for economic activity/poverty)
 dataset on travel times to nearest large city may also be useful (be
 aware this is a large file). Refer back to week 2 if you want to include
 distance to something (e.g. health facility etc.).
-
