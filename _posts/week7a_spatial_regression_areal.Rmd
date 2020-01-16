@@ -1,0 +1,187 @@
+---
+title: "Spatial regression of areal data"
+output: github_document
+---
+## Week 7 - spatial regression of areal data
+
+You now have the skills to:
+- map spatial data
+- obtain, generate and manipulate raster data
+- conduct spatial interpolation
+- identify clustering
+- fit spatial regression models to point prevalence data
+
+This week are going to introduce 2 more topics. 
+
+1) Modeling count data
+2) Fitting spatial models to areal (i.e. polygon) data
+
+## Modeling count data
+
+The malaria data in Oromia is an example of binomial data. You are also likely to explore count data (e.g. numbers of disease cases). We can use a similar process to model these data. Let's look at an example of counts recorded over areal units (i.e. polygons). These data contain information on leukemia cases from New York (Turnbull et al 1990). We’ll load in the shape files for New York census tracks and the locations of hazardous waste sites as potential exposures. 
+
+First, load the libraries required for this week
+```{r}
+library(sp)
+library(ggplot2)
+library(rgdal)
+library(spdep)
+library(leaflet)
+library(spaMM)
+library(viridis)
+```
+
+
+```{r nyc_data}
+nydata <- rgdal::readOGR("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week7/Lab_files/nydata.geojson")
+
+# Let's look at the data
+head(nydata@data)
+
+# Let's create an incidence column
+nydata$inc_per_1000 <- (nydata$Cases / nydata$POP8) * 1000
+cases_pal <- colorBin(viridis(4), bins = c(0, 0.1, 0.5, 1, 8), nydata$inc_per_1000)
+plot(nydata, col = cases_pal(nydata$inc_per_1000), asp = 1)
+legend('bottomright', legend = c('0 - 0.1', '0.1 - 0.5', '0.5 - 1', '1 - 8'),
+       fill = cases_pal(c(0, 0.1, 0.5, 1, 8)),
+       title = 'Cases / 1000')
+
+# For more info on the dataset type ?spData::nydata
+```
+
+If we are interested in the relationship between incidence of leukemia and proximity to hazardous waste sites, we can use a regression framework. To model incidence, we will use a Poisson regression which is suitable for modeling count outcomes. As we are more interested in incidence than numbers of cases (i.e. case numbers are in part driven by population), we can include population as an 'offset' term which effectively allows us to model rates/incidence. Including population as an offset is kind of like including population as a fixed effect in the background. An offest should be included on the log scale as Poisson regression works in log space. Sometimes, the 'expected' counts are used in place of population. These expected counts are typically just a scaled version of population, being the counts you would expect if the mean incidence rate was applied to every areal unit.  
+
+Let's try fitting a simple model using the covariates `PEXPOSURE` which is "exposure potential" calculated as the inverse distance between each census tract centroid and the nearest TCE site.
+
+```{r poisson}
+# First round the case numbers
+nydata$CASES <- round(nydata$TRACTCAS)
+nyc_glm_mod <- glm(CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P, offset = log(POP8), 
+                     data = nydata, family = 'poisson')
+summary(nyc_glm_mod)
+```
+
+We can see that 'PEXPOSURE' is positively related to incidence, i.e. the further from contamination sites, the lower the risk of leukemia. We can plot fitted versus observed values.
+
+```{r poisson_validation}
+# Scatter plot
+ggplot() + geom_point(aes(nyc_glm_mod$fitted.values, nydata$CASES))
+
+# Create maps
+nydata$fitted <- nyc_glm_mod$fitted.values
+
+col_pal <- colorNumeric(topo.colors(64), c(0,9))
+par(mfrow=c(2,1), mar=c(rep(0.8,4)))
+plot(nydata, col = col_pal(nydata$fitted), asp=1, main = 'Fitted')
+plot(nydata, col = col_pal(nydata$CASES), asp=1, main = 'Observed')
+legend("bottomright", inset = 0.2,
+       legend=0:9, fill = col_pal(0:9),
+       title = 'Counts')
+```
+
+
+However, just as covered in week 6, we are making the assumption that the model residuals are independent. In reality, often neighbouring values display some correlation. If present, residual spatial autocorrelation violates the assumption made when applying GLMs. In [Week 4]() we covered how to test for spatial autocorrelation (clustering) using a neighbourhood matrix. Such an approach is suitable for areal data where spatial relationships are often better modeled using adjacencies as opposed to distances. We can apply the same approach using our model residuals to test for residual spatial autocorrelation of areal data.
+
+```{r spatial_dep_test}
+# Contiguity neighbors - all that share a boundary point
+nydata_nb <- poly2nb(nydata)  #queen contiguity
+nydata_nb
+# coordinates
+coords<-coordinates(nydata)
+
+#view the neighbors
+plot(nydata, asp = 1)
+plot(nydata_nb,coords,col="blue",add=T)
+```
+
+Now we have our neighbourhood list, we can run a Conditional Autoregessive (CAR) model, which allows us to incorporate the spatial autocorrelation between neighbours within our GLM. To do this, we are going to stick with the `spaMM` package. We first need to convert our neighbourhood list to a neighbourhood (adjacency) matrix which is required by the function. For a CAR model we have to use binary weights (i.e. are you a neighbour 0/1)
+
+```{r}
+adj_matrix <- nb2mat(nydata_nb, style="B")
+
+# Annoyingly we have to remove the row.names, otherwise R complains later
+row.names(adj_matrix) <- NULL
+```
+
+Now we can fit the model
+```{r}
+nyc_car_mod <- fitme(CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1|AREAKEY), 
+                     offset = log(nydata$POP8),
+                     adjMatrix = adj_matrix,
+                     data = nydata@data, family = 'poisson')
+
+summary(nyc_car_mod)
+```
+How has the inclusion of a spatial term affected our estimates? Remeber from week 6, that if you want to generate 95% CIs of your estimates you can use the following code
+
+```{r}
+terms <- c('PEXPOSURE', 'PCTOWNHOME', 'PCTAGE65P')
+coefs <- as.data.frame(summary(nyc_car_mod)$beta_table)
+row <- row.names(coefs) %in% terms
+lower <- coefs[row,'Estimate'] - 1.96*coefs[row, 'Cond. SE']
+upper <- coefs[row,'Estimate'] + 1.96*coefs[row, 'Cond. SE']
+data.frame(terms = terms,
+           OR = exp(coefs[row,'Estimate']),
+           lower = exp(lower),
+           upper = exp(upper))
+```
+
+We can see how well the model fits using scatter plots and maps
+```{r car_validation}
+# Scatter plot
+ggplot() + geom_point(aes(fitted(nyc_car_mod), nydata$CASES))
+
+# Create maps
+nydata$fitted_car <- fitted(nyc_car_mod)
+
+col_pal <- colorNumeric(topo.colors(64), c(0,9))
+par(mfrow=c(2,1), mar=rep(2,4))
+plot(nydata, col = col_pal(nydata$fitted_car), asp=1, main = 'Fitted - CAR')
+legend("bottomright", inset = 0.1, cex = 0.8,
+       legend=0:9, fill = col_pal(0:9),
+       title = 'Counts')
+plot(nydata, col = col_pal(nydata$CASES), asp=1, main = 'Observed')
+
+```
+
+### References
+#### Citation for the leukemia data
+
+Turnbull, B. W. et al (1990) Monitoring for clusters of disease:
+application to leukemia incidence in upstate New York American Journal
+of Epidemiology, 132, 136–143
+
+#### Key reading
+Bivand R, Pebesma E, Gomez-Rubio V. (2013). Applied Spatial Data Analysis with R. Use R! Springer: New York (particularly chapter 9 on areal data)
+
+#### Other resources
+
+S. Banerjee, B.P. Carlin and A.E. Gelfand (2003). Hierarchical Modeling and Analysis for Spatial Data. Chapman & Hall.
+
+D.J. Spiegelhalter, N.G. Best, B.P. Carlin and A. Van der Linde (2002). Bayesian Measures of Model Complexity and Fit (with Discussion), Journal of the Royal Statistical Society, Series B 64(4), 583-616.
+
+L.A. Waller and C.A. Gotway (2004). Applied Spatial Statistics for Public Health Data. Wiley & Sons.
+
+
+### Assignment
+1.  Load the [Scottish Lip Cancer dataset](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week7/assignment/scotlip.geojson)
+```{r}
+scotlip <- readOGR('https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week7/assignment/scotlip.geojson')
+```
+
+This file contains data on numbers of lip cancer cases in Scotland from 1975 - 1986. It contains the following fields 
+* ID = ID of the county
+* county.names = County name
+* cases = Number of cases
+* expected = Expected number of cases if risk/incidence were equal over every county
+* AFF = Proportion of the population involved in fishing, forestry or agriculture
+* SMR = cases / expected
+
+
+1.  Test for spatial autocorrelation - you should know how to do this
+
+2.  Compare a spatial model to a non-spatial model - which is better and why?
+
+3.  Is the effect of AFF the same in both models? What is your interpretation of this covariate in the best model?
+
+4.  Run a spatial model and plot/map the fitted compared to the observed
