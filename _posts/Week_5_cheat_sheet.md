@@ -1,7 +1,6 @@
-Week 5 in class assignment cheat sheet
+Week 5 Pop quizcheat sheet
 ================
 
-In class assignment 1
 
 ``` r
 # Administrative boundaries (level 0)
@@ -61,65 +60,3 @@ leaflet() %>% # Plot
 
 ![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_cheat_sheet_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
-In class assignment
-    2
-
-    ### Many possible solutions, the point of the exercise being to have you struggle with accessing new data online/from R
-    
-    ## Cheating solution 1:
-    # Administrative boundaries (level 0)
-    LAO_Adm_0 <- raster::getData(name = "GADM",
-                                 country = "LAO",
-                                 level = 0)
-    
-    leaflet() %>% # Plot
-      addProviderTiles("OpenStreetMap.Mapnik") %>%
-      addPolygons(data = LAO_Adm_0,
-                  popup = LAO_Adm_0$NAME_0,
-                  label = LAO_Adm_0$NAME_0,
-                  fillOpacity = 0)
-
-    ## Solution 2:
-    library(maptools)
-    # Path to OSM folder you just downloaded
-    path_to_OSM_folder <- "...."
-    
-    LaosRoads <- rgdal::readOGR(dsn = paste0(path_to_OSM_folder,"/laos-latest-free"),
-                                layer = "gis_osm_roads_free_1")
-    LaosRoadsPST <- LaosRoads[which(LaosRoads$fclass == "trunk" |
-                                    LaosRoads$fclass =="trunk_link" |
-                                    LaosRoads$fclass == "primary" |
-                                    LaosRoads$fclass == "primary_link" |
-                                    LaosRoads$fclass == "secondary" |
-                                    LaosRoads$fclass == "secondary_link" |
-                                    LaosRoads$fclass == "road" |
-                                    LaosRoads$fclass == "tertiary" |
-                                    LaosRoads$fclass == "tertiary_link"),]
-    
-    factpal <- colorFactor(palette = topo.colors(length(levels(LaosRoadsPST$fclass))), domain = levels(LaosRoadsPST$fclass)) # define color palette
-    
-    leaflet() %>% # Plot
-      addProviderTiles("CartoDB.Positron") %>%
-      addPolygons(data = LAO_Adm_0,
-                  popup = LAO_Adm_0$NAME_0,
-                  label = LAO_Adm_0$NAME_0,
-                  fillOpacity = 0,
-                  color = "black") %>%
-      addPolylines(data = LaosRoadsPST,
-                   color = ~factpal(fclass),
-                   popup = ~fclass,
-                   label = ~fclass)
-
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_cheat_sheet_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
-
-    ## Loading required package: sp
-
-    ## Checking rgeos availability: TRUE
-
-    ## OGR data source with driver: ESRI Shapefile 
-    ## Source: "/Users/sturrockh/Downloads/laos-latest-free", layer: "gis_osm_roads_free_1"
-    ## with 70377 features
-    ## It has 10 fields
-    ## Integer64 fields read as strings:  layer
-
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week_5_cheat_sheet_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
