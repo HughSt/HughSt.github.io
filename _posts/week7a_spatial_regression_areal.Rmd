@@ -121,7 +121,7 @@ row <- row.names(coefs) %in% terms
 lower <- coefs[row,'Estimate'] - 1.96*coefs[row, 'Cond. SE']
 upper <- coefs[row,'Estimate'] + 1.96*coefs[row, 'Cond. SE']
 data.frame(terms = terms,
-           OR = exp(coefs[row,'Estimate']),
+           IRR = exp(coefs[row,'Estimate']),
            lower = exp(lower),
            upper = exp(upper))
 ```
