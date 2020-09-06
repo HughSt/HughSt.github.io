@@ -105,8 +105,8 @@ row.names(adj_matrix) <- NULL
 
 Now we can fit the model
 ```{r}
-nyc_car_mod <- fitme(CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1|AREAKEY), 
-                     offset = log(nydata$POP8),
+nyc_car_mod <- fitme(CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1|AREAKEY) +
+                             offset(log(POP8)), 
                      adjMatrix = adj_matrix,
                      data = nydata@data, family = 'poisson')
 

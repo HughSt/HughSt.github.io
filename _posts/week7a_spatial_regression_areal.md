@@ -30,35 +30,45 @@ library(ggplot2)
 library(rgdal)
 ```
 
-    ## rgdal: version: 1.4-8, (SVN revision 845)
-    ##  Geospatial Data Abstraction Library extensions to R successfully loaded
-    ##  Loaded GDAL runtime: GDAL 2.4.2, released 2019/06/28
-    ##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/gdal
-    ##  GDAL binary built with GEOS: FALSE 
-    ##  Loaded PROJ.4 runtime: Rel. 5.2.0, September 15th, 2018, [PJ_VERSION: 520]
-    ##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/proj
-    ##  Linking to sp version: 1.3-2
+    ## rgdal: version: 1.5-12, (SVN revision 1018)
+    ## Geospatial Data Abstraction Library extensions to R successfully loaded
+    ## Loaded GDAL runtime: GDAL 3.1.1, released 2020/06/22
+    ## Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/4.0/Resources/library/rgdal/gdal
+    ## GDAL binary built with GEOS: TRUE 
+    ## Loaded PROJ runtime: Rel. 6.3.1, February 10th, 2020, [PJ_VERSION: 631]
+    ## Path to PROJ shared files: /Library/Frameworks/R.framework/Versions/4.0/Resources/library/rgdal/proj
+    ## Linking to sp version:1.4-2
+    ## To mute warnings of possible GDAL/OSR exportToProj4() degradation,
+    ## use options("rgdal_show_exportToProj4_warnings"="none") before loading rgdal.
 
 ``` r
 library(spdep)
 ```
 
-    ## Loading required package: Matrix
-
     ## Loading required package: spData
 
     ## To access larger datasets in this package, install the spDataLarge
     ## package with: `install.packages('spDataLarge',
-    ## repos='https://nowosad.github.io/drat/', type='source'))`
+    ## repos='https://nowosad.github.io/drat/', type='source')`
+
+    ## Loading required package: sf
+
+    ## Linking to GEOS 3.8.1, GDAL 3.1.1, PROJ 6.3.1
 
 ``` r
 library(leaflet)
 library(spaMM)
 ```
 
-    ## spaMM (version 3.0.0) is loaded.
+    ## Registered S3 methods overwritten by 'registry':
+    ##   method               from 
+    ##   print.registry_field proxy
+    ##   print.registry_entry proxy
+
+    ## spaMM (Rousset & Ferdy, 2014, version 3.3.0) is loaded.
     ## Type 'help(spaMM)' for a short introduction,
-    ## and news(package='spaMM') for news.
+    ## 'news(package='spaMM')' for news,
+    ## and 'citation(spaMM)' for proper citation.
 
 ``` r
 library(viridis)
@@ -87,20 +97,20 @@ head(nydata@data)
     ## 3 Binghamton city 36007000400 7.613831 -65.9958 2784     1.07 0.000384
     ## 4 Binghamton city 36007000500 7.315968 -67.3183 2571     3.06 0.001190
     ## 5 Binghamton city 36007000600 8.558753 -66.9344 2729     1.06 0.000388
-    ##   PCTOWNHOME PCTAGE65P        Z  AVGIDIST PEXPOSURE   Cases       Xm
-    ## 0  0.3277311 0.1466102  0.14197 0.2373852  3.167099 3.08284 4069.397
-    ## 1  0.4268293 0.2351124  0.35555 0.2087413  3.038511 4.08331 4639.371
-    ## 2  0.3377396 0.1380048 -0.58165 0.1708548  2.838229 1.08750 5709.063
-    ## 3  0.4616048 0.1188937 -0.29634 0.1406045  2.643366 1.06515 7613.831
-    ## 4  0.1924370 0.1415791  0.45689 0.1577753  2.758587 3.06017 7315.968
-    ## 5  0.3651786 0.1410773 -0.28123 0.1726033  2.848411 1.06386 8558.753
-    ##         Ym   Xshift  Yshift
-    ## 0 -67353.3 423391.0 4661502
-    ## 1 -66861.9 423961.0 4661993
-    ## 2 -66977.5 425030.6 4661878
-    ## 3 -65995.8 426935.4 4662859
-    ## 4 -67318.3 426637.5 4661537
-    ## 5 -66934.4 427880.3 4661921
+    ##   PCTOWNHOME PCTAGE65P        Z  AVGIDIST PEXPOSURE   Cases       Xm       Ym
+    ## 0  0.3277311 0.1466102  0.14197 0.2373852  3.167099 3.08284 4069.397 -67353.3
+    ## 1  0.4268293 0.2351124  0.35555 0.2087413  3.038511 4.08331 4639.371 -66861.9
+    ## 2  0.3377396 0.1380048 -0.58165 0.1708548  2.838229 1.08750 5709.063 -66977.5
+    ## 3  0.4616048 0.1188937 -0.29634 0.1406045  2.643366 1.06515 7613.831 -65995.8
+    ## 4  0.1924370 0.1415791  0.45689 0.1577753  2.758587 3.06017 7315.968 -67318.3
+    ## 5  0.3651786 0.1410773 -0.28123 0.1726033  2.848411 1.06386 8558.753 -66934.4
+    ##     Xshift  Yshift
+    ## 0 423391.0 4661502
+    ## 1 423961.0 4661993
+    ## 2 425030.6 4661878
+    ## 3 426935.4 4662859
+    ## 4 426637.5 4661537
+    ## 5 427880.3 4661921
 
 ``` r
 # Let's create an incidence column
@@ -245,46 +255,45 @@ adj_matrix <- nb2mat(nydata_nb, style="B")
 row.names(adj_matrix) <- NULL
 ```
 
-Now we can fit the
-model
+Now we can fit the model
 
 ``` r
-nyc_car_mod <- fitme(CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1|AREAKEY), 
-                     offset = log(nydata$POP8),
+nyc_car_mod <- fitme(CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1|AREAKEY) +
+                             offset(log(POP8)), 
                      adjMatrix = adj_matrix,
                      data = nydata@data, family = 'poisson')
 ```
 
-    ## Warning in fitme(CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1
-    ## | : suspect argument(s) offset in fitme call.
+    ## If the 'RSpectra' package were installed, an eigenvalue computation could be faster.
 
 ``` r
 summary(nyc_car_mod)
 ```
 
-    ## formula: CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1 | AREAKEY)
+    ## formula: CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1 | AREAKEY) + 
+    ##     offset(log(POP8))
     ## Estimation of corrPars and lambda by Laplace ML approximation (p_v).
     ## Estimation of fixed effects by Laplace ML approximation (p_v).
     ## Estimation of lambda by 'outer' ML, maximizing p_v.
     ## Family: poisson ( link = log ) 
     ##  ------------ Fixed effects (beta) ------------
     ##             Estimate Cond. SE t-value
-    ## (Intercept)  -0.3882  0.23910 -1.6235
-    ## PEXPOSURE     0.2681  0.04459  6.0129
-    ## PCTOWNHOME    0.1650  0.25018  0.6597
-    ## PCTAGE65P     2.2537  0.83412  2.7019
+    ## (Intercept)  -8.1955  0.20389 -40.195
+    ## PEXPOSURE     0.1510  0.03444   4.386
+    ## PCTOWNHOME   -0.4165  0.21228  -1.962
+    ## PCTAGE65P     4.0803  0.68714   5.938
     ##  --------------- Random effects ---------------
     ## Family: gaussian ( link = identity ) 
     ##                    --- Correlation parameters:
-    ##       1.rho 
-    ## -0.01760654 
+    ##      1.rho 
+    ## -0.2533568 
     ##            --- Variance parameters ('lambda'):
     ## lambda = var(u) for u ~ Gaussian; 
-    ##    AREAKEY  :  0.3034  
+    ##    AREAKEY  :  0.06657  
     ## # of obs: 281; # of groups: AREAKEY, 281 
     ##  ------------- Likelihood values  -------------
     ##                         logLik
-    ## p_v(h) (marginal L): -515.1743
+    ## p_v(h) (marginal L): -471.4893
 
 How has the inclusion of a spatial term affected our estimates? Remeber
 from week 6, that if you want to generate 95% CIs of your estimates you
@@ -295,44 +304,45 @@ terms <- c('PEXPOSURE', 'PCTOWNHOME', 'PCTAGE65P')
 coefs <- as.data.frame(summary(nyc_car_mod)$beta_table)
 ```
 
-    ## formula: CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1 | AREAKEY)
+    ## formula: CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1 | AREAKEY) + 
+    ##     offset(log(POP8))
     ## Estimation of corrPars and lambda by Laplace ML approximation (p_v).
     ## Estimation of fixed effects by Laplace ML approximation (p_v).
     ## Estimation of lambda by 'outer' ML, maximizing p_v.
     ## Family: poisson ( link = log ) 
     ##  ------------ Fixed effects (beta) ------------
     ##             Estimate Cond. SE t-value
-    ## (Intercept)  -0.3882  0.23910 -1.6235
-    ## PEXPOSURE     0.2681  0.04459  6.0129
-    ## PCTOWNHOME    0.1650  0.25018  0.6597
-    ## PCTAGE65P     2.2537  0.83412  2.7019
+    ## (Intercept)  -8.1955  0.20389 -40.195
+    ## PEXPOSURE     0.1510  0.03444   4.386
+    ## PCTOWNHOME   -0.4165  0.21228  -1.962
+    ## PCTAGE65P     4.0803  0.68714   5.938
     ##  --------------- Random effects ---------------
     ## Family: gaussian ( link = identity ) 
     ##                    --- Correlation parameters:
-    ##       1.rho 
-    ## -0.01760654 
+    ##      1.rho 
+    ## -0.2533568 
     ##            --- Variance parameters ('lambda'):
     ## lambda = var(u) for u ~ Gaussian; 
-    ##    AREAKEY  :  0.3034  
+    ##    AREAKEY  :  0.06657  
     ## # of obs: 281; # of groups: AREAKEY, 281 
     ##  ------------- Likelihood values  -------------
     ##                         logLik
-    ## p_v(h) (marginal L): -515.1743
+    ## p_v(h) (marginal L): -471.4893
 
 ``` r
 row <- row.names(coefs) %in% terms
 lower <- coefs[row,'Estimate'] - 1.96*coefs[row, 'Cond. SE']
 upper <- coefs[row,'Estimate'] + 1.96*coefs[row, 'Cond. SE']
 data.frame(terms = terms,
-           OR = exp(coefs[row,'Estimate']),
+           IRR = exp(coefs[row,'Estimate']),
            lower = exp(lower),
            upper = exp(upper))
 ```
 
-    ##        terms       OR     lower     upper
-    ## 1  PEXPOSURE 1.307513 1.1980878  1.426931
-    ## 2 PCTOWNHOME 1.179451 0.7223067  1.925919
-    ## 3  PCTAGE65P 9.522809 1.8567157 48.841018
+    ##        terms        IRR      lower       upper
+    ## 1  PEXPOSURE  1.1630502  1.0871430   1.2442575
+    ## 2 PCTOWNHOME  0.6593296  0.4349178   0.9995348
+    ## 3  PCTAGE65P 59.1607541 15.3859459 227.4799906
 
 We can see how well the model fits using scatter plots and maps
 
