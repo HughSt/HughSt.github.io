@@ -112,7 +112,7 @@ nyc_car_mod <- fitme(CASES ~ PEXPOSURE + PCTOWNHOME + PCTAGE65P + adjacency(1|AR
 
 summary(nyc_car_mod)
 ```
-How has the inclusion of a spatial term affected our estimates? Remeber from week 6, that if you want to generate 95% CIs of your estimates you can use the following code
+How has the inclusion of a spatial term affected our estimates? Remember from week 6, that if you want to generate 95% CIs of your estimates you can use the following code
 
 ```{r}
 terms <- c('PEXPOSURE', 'PCTOWNHOME', 'PCTAGE65P')
