@@ -5,7 +5,7 @@ output: github_document
 
 This week we are going to explore methods to understand and predict risk across space from point data.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(Metrics)
 library(spatstat)
 library(raster)
@@ -75,9 +75,10 @@ plot(case_density) # Units are intensity of points per unit square
 
 Its possible to use different bandwidths. The larger the bandwidth, the smoother the density estimate. 
 ```{r}
-plot(density(Cases_ppp,0.02))
-plot(density(Cases_ppp,0.1))
-plot(density(Cases_ppp,bw.ppl)) # automatic bandwidth selection based on cross-validation
+par(mfrow=c(3,1), mar=c(1,1,1,1))
+plot(density(Cases_ppp,0.02), main = "Bandwidth 0.02")
+plot(density(Cases_ppp,0.1), main = "Bandwidth 0.02")
+plot(density(Cases_ppp,bw.ppl), main = "Automatically selected bandwidth") # automatic bandwidth selection based on cross-validation
 ```
 
 If you want to map using leaflet, you have to convert the density object to a rasterLayer with a coordinate reference system
@@ -289,5 +290,50 @@ xvalid_result <- xvalid(ETH_malaria_data_geo, model = VarioMod_sph)
 plot(xvalid_result$data,xvalid_result$predicted, asp=1)
 abline(0,1)
 ```
+
+You might notice that some of the kriged values are <0. As we are modeling probabilities this can't be true. In these situations, it is possible to apply a transformation to your data before kriging and then back-transform results. One transformation useful for probabilities is the logit transform (used in logistic regression). The `logit` and `inv.logit` functions from the package `gtools` can be used for this. Note that it doesn't work if you have 0 values as you can't log(0). You can add a small amount to avoid this situation. The process would look like this
+
+```{r}
+# Add small amount to avoid zeros
+ETH_malaria_data$pf_pr_adj <- ETH_malaria_data$pf_pr + 0.001
+
+# Apply logit transform and convert to geodata
+ETH_malaria_data$pf_pr_logit <- logit(ETH_malaria_data$pf_pr_adj)
+ETH_malaria_data_geo_logit <- as.geodata(ETH_malaria_data[,c("longitude","latitude","pf_pr_logit")])
+
+# Fit (spherical) variogram
+Vario_logit <- variog(ETH_malaria_data_geo_logit, max.dist = MaxDist)
+VarioMod_sph_logit <- variofit(Vario_logit, cov.model = "sph")
+
+# Get CV kriged predictions
+xvalid_result_logit <- xvalid(ETH_malaria_data_geo_logit, model = VarioMod_sph_logit)
+xvalid_result_inv_logit <- inv.logit(xvalid_result_logit$predicted)
+```
+
+
 ## Pop quiz
-How could you compare how well IDW performs versus kriging? Which appears to be more accurate?
+* How could you compare how well the best fitting IDW performs versus kriging? 
+* Which appears to be more accurate?
+* Can you visualize where predictions from IDW differ to kriging?
+* Does inclusion of a trend surface improve kriging estimates?
+
+Answers [here](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week_3_cheat_sheet.R)
+
+## Key readings
+
+#### Good overview
+Pfeiffer, D., T. P. Robinson, M. Stevenson, K. B. Stevens, D. J. Rogers and A. C. Clements (2008). Spatial analysis in epidemiology, Oxford University Press Oxford. Chapter 6. 
+
+#### Technical paper covering kernel estimation of relative risk
+Kelsall, Julia E., and Peter J. Diggle. "Kernel estimation of relative risk." Bernoulli 1.1-2 (1995): 3-16.
+
+#### Illustration of the Kelsall Diggle approach used to map sleeping sickness risk
+[Simarro, Pere P., et al. "Estimating and mapping the population at risk of sleeping sickness." PLoS neglected tropical diseases 6.10 (2012): e1859.](https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0001859)
+
+
+## Additional readings
+#### Nice example of kriging applied across space and time
+[Gething, Peter W., et al. "A local space–time kriging approach applied to a national outpatient malaria data set." Computers & geosciences 33.10 (2007): 1337-1350.](https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0030271)
+
+### Additional example of Kelsall Diggle in action
+Di Salvo, Francesca, et al. "Spatial variation in mortality risk for hematological malignancies near a petrochemical refinery: A population-based case-control study." Environmental research 140 (2015): 641-648.

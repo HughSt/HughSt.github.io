@@ -7,100 +7,30 @@ across space from point data.
 ``` r
 library(Metrics)
 library(spatstat)
-```
-
-    ## Loading required package: spatstat.data
-
-    ## Loading required package: nlme
-
-    ## Loading required package: rpart
-
-    ## 
-    ## spatstat 1.55-1       (nickname: 'Gamble Responsibly') 
-    ## For an introduction to spatstat, type 'beginner'
-
-    ## 
-    ## Note: spatstat version 1.55-1 is out of date by more than a year; we strongly recommend upgrading to the latest version.
-
-    ## 
-    ## Attaching package: 'spatstat'
-
-    ## The following object is masked from 'package:Metrics':
-    ## 
-    ##     auc
-
-``` r
 library(raster)
-```
-
-    ## Loading required package: sp
-
-    ## 
-    ## Attaching package: 'raster'
-
-    ## The following objects are masked from 'package:spatstat':
-    ## 
-    ##     area, rotate, shift
-
-    ## The following object is masked from 'package:nlme':
-    ## 
-    ##     getData
-
-``` r
 library(sp)
 library(geoR)
-```
-
-    ## --------------------------------------------------------------
-    ##  Analysis of Geostatistical Data
-    ##  For an Introduction to geoR go to http://www.leg.ufpr.br/geoR
-    ##  geoR version 1.7-5.2.1 (built on 2016-05-02) is now loaded
-    ## --------------------------------------------------------------
-
-``` r
 library(gtools)
 library(lme4)
-```
-
-    ## Loading required package: Matrix
-
-    ## 
-    ## Attaching package: 'lme4'
-
-    ## The following object is masked from 'package:nlme':
-    ## 
-    ##     lmList
-
-``` r
 library(leaflet)
 library(oro.nifti)
 ```
 
-    ## oro.nifti 0.9.1
-
-    ## 
-    ## Attaching package: 'oro.nifti'
-
-    ## The following objects are masked from 'package:raster':
-    ## 
-    ##     origin, origin<-, overlay
-
 First load up some obfuscated malaria case-control data from Namibia.
-This is comprised of latitudes and longitudes of cases and
-controls.
+This is comprised of latitudes and longitudes of cases and controls.
 
 ``` r
 CaseControl<-read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week3/Lab_files/CaseControl.csv")
 head(CaseControl)
 ```
 
-    ##   X.1 X household_id       lat     long case
-    ## 1   1 1          1.1 -17.51470 16.05666    1
-    ## 2   2 2          2.1 -17.82175 16.15147    1
-    ## 3   3 3          3.1 -17.78743 15.93465    1
-    ## 4   4 4          4.1 -17.51352 15.83933    1
-    ## 5   5 5          5.1 -17.63668 15.91185    1
-    ## 6   6 6          7.1 -17.64459 16.16105    1
+    ##   household_id       lat     long case
+    ## 1            1 -17.51470 16.05666    1
+    ## 2            2 -17.82175 16.15147    1
+    ## 3            3 -17.78743 15.93465    1
+    ## 4            4 -17.51352 15.83933    1
+    ## 5            5 -17.63668 15.91185    1
+    ## 6            6 -17.64459 16.16105    1
 
 To set ourselves up for further analyses, let’s create objects of just
 cases and just controls
@@ -114,8 +44,7 @@ Controls<-CaseControl[CaseControl$case==0,]
 ```
 
 We are also going to create a `SpatialPointsDataFrame` of the
-case-control
-data
+case-control data
 
 ``` r
 CaseControl_SPDF <- SpatialPointsDataFrame(coords = CaseControl[,c("long", "lat")],
@@ -129,15 +58,13 @@ NAM_Adm0<-raster::getData('GADM',country='NAM',level=0)
 ```
 
 Let’s plot and see what we have. First, create a color scheme based on
-the case classification (0 or
-1)
+the case classification (0 or 1)
 
 ``` r
 case_color_scheme <- colorNumeric(c("blue", "red"), CaseControl_SPDF$case)
 ```
 
-Then,
-    plot
+Then, plot
 
     leaflet() %>% addTiles() %>% addCircleMarkers(data=CaseControl_SPDF, 
                                                   color = case_color_scheme(CaseControl_SPDF$case),
@@ -147,8 +74,7 @@ Then,
 
 To generate a kernel density estimate, we first need to generate point
 pattern object of points (aka ppp). First, we need to define a window
-defining the population from which the cases
-arose
+defining the population from which the cases arose
 
 ``` r
 Nam_Owin <- owin(xrange=range(CaseControl$long),yrange=range(CaseControl$lat))
@@ -173,26 +99,16 @@ plot(case_density) # Units are intensity of points per unit square
 ![](week3_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 Its possible to use different bandwidths. The larger the bandwidth, the
-smoother the density
-estimate.
+smoother the density estimate.
 
 ``` r
-plot(density(Cases_ppp,0.02))
+par(mfrow=c(3,1),oma=c(1,1,1,1))
+plot(density(Cases_ppp,0.02), main = "Bandwidth 0.02")
+plot(density(Cases_ppp,0.1), main = "Bandwidth 0.02")
+plot(density(Cases_ppp,bw.ppl), main = "Automatically selected bandwidth") # automatic bandwidth selection based on cross-validation
 ```
 
 ![](week3_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
-
-``` r
-plot(density(Cases_ppp,0.1))
-```
-
-![](week3_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
-
-``` r
-plot(density(Cases_ppp,bw.ppl)) # automatic bandwidth selection based on cross-validation
-```
-
-![](week3_files/figure-gfm/unnamed-chunk-10-3.png)<!-- -->
 
 If you want to map using leaflet, you have to convert the density object
 to a rasterLayer with a coordinate reference system
@@ -219,11 +135,13 @@ CaseControl_ppp <- ppp(CaseControl$long, CaseControl$lat,
 
 If the ‘relative’ argument is not included in the code line, then it is
 technically specified as ‘FALSE’, because that is the default. The
-output is, therefore, the probability of being a case. Sigma is the
-bandwidth.
+output is, therefore, the probability of being a case. You can set sigma
+(bandwidth), but the default is to use cross-validation to find a common
+bandwidth to use for cases and controls. See `?bw.relrisk` for more
+details.
 
 ``` r
-risk_est <-  relrisk(CaseControl_ppp, sigma = 0.1) 
+risk_est <-  relrisk(CaseControl_ppp) 
 plot(risk_est)
 ```
 
@@ -234,7 +152,7 @@ output is the relative risk, the (probability of being a case, relative
 to probability of being a control)
 
 ``` r
-rel_risk_est <-  relrisk(CaseControl_ppp, relative = TRUE, sigma = 0.1)
+rel_risk_est <-  relrisk(CaseControl_ppp, relative = TRUE)
 plot(rel_risk_est)
 ```
 
@@ -246,23 +164,20 @@ To plot on a web map, first specify the projection
 risk_raster <- raster(risk_est, crs = crs(NAM_Adm0))
 ```
 
-Then define a color
-palette
+Then define a color palette
 
 ``` r
 pal <- colorNumeric(palette=tim.colors(64), domain=values(risk_raster), na.color = NA)
 ```
 
-Then plot with
-    leaflet
+Then plot with leaflet
 
     leaflet() %>% addTiles("http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png") %>% 
-      addRasterImage(risk_raster, opacity=0.6, col = pal)
+      addRasterImage(risk_raster, opacity=0.6, col = pal) 
 
 ## Interpolation of point (prevalence etc.) data
 
-First load BF malaria
-data
+First load BF malaria data
 
 ``` r
 ETH_malaria_data <- read.csv("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week1/Lab_files/Data/mal_data_eth_2009_no_dups.csv",header=T)
@@ -328,28 +243,46 @@ colPal <- colorNumeric(tim.colors(), ETH_malaria_data_idw_raster[], na.color = N
 
 To calculate the ‘best’ power to use, you can use cross-validation. This
 is possible using the argument `at=points` when running the `idw`
-function.
+function. There is no off the shelf function (that I know of) to do
+this, so you have to loop through different power values and find the
+one that produces the lowest error using cross-validation.
 
 ``` r
-CV_idw_1 <- idw(ETH_malaria_data_ppp, power=3, at="points")
-plot(ETH_malaria_data_ppp$marks, CV_idw_1, asp=1) 
+powers <- seq(0.05, 2, 0.05)
+mse_result <- NULL
+for(power in powers){
+  CV_idw <- idw(ETH_malaria_data_ppp, power=power, at="points")
+  mse_result <- c(mse_result,
+                  mse(ETH_malaria_data_ppp$marks,CV_idw))
+}
+
+# See which produced the lowest error
+optimal_power <- powers[which.min(mse_result)]
+optimal_power
+```
+
+    ## [1] 1.4
+
+``` r
+plot(powers, mse_result)
 ```
 
 ![](week3_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
+Plot observed versus expected with optimal power
+
 ``` r
-# Calculate Mean Squared Error (MSE)
-mse(ETH_malaria_data_ppp$marks,CV_idw_1) # Mean squared error
+CV_idw_opt <- idw(ETH_malaria_data_ppp, power=optimal_power, at="points")
+plot(ETH_malaria_data_ppp$marks, CV_idw_opt) 
 ```
 
-    ## [1] 0.0001640973
+![](week3_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 ## Kriging
 
 We are going to use the GeoR package to perform kriging. First, we have
 to create a geodata object with the package GeoR. This wants dataframe
-of x,y and
-data
+of x,y and data
 
 ``` r
 ETH_malaria_data_geo <- as.geodata(ETH_malaria_data[,c("longitude","latitude","pf_pr")])
@@ -362,7 +295,7 @@ gives us lowes curves for the relationship between x and y
 plot(ETH_malaria_data_geo, lowes=T)
 ```
 
-![](week3_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](week3_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 It’s important to assess whether there is a first order trend in the
 data before kriging. We can see from the plots of the prevalence against
@@ -386,11 +319,11 @@ VarioCloud<-variog(ETH_malaria_data_geo, option="cloud", max.dist=MaxDist)
 plot(VarioCloud) # all pairwise comparisons
 ```
 
-![](week3_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](week3_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
 ``` r
 # To make it easier to interpret, we can bin points by distance
-Vario <- variog(ETH_malaria_data_geo, max.dist = MaxDist)
+Vario <- variog(ETH_malaria_data_geo, max.dist = MaxDist, trend = "2nd")
 ```
 
     ## variog: computing omnidirectional variogram
@@ -399,11 +332,10 @@ Vario <- variog(ETH_malaria_data_geo, max.dist = MaxDist)
 plot(Vario)
 ```
 
-![](week3_files/figure-gfm/unnamed-chunk-24-2.png)<!-- -->
+![](week3_files/figure-gfm/unnamed-chunk-25-2.png)<!-- -->
 
 Its possible to change the way the variogram bins are constructed. Just
-be careful not to have too few pairs of points in any distance
-class.
+be careful not to have too few pairs of points in any distance class.
 
 ``` r
 Vario <- variog(ETH_malaria_data_geo,max.dist=MaxDist,uvec=seq(0.01,MaxDist,0.2)) 
@@ -416,8 +348,8 @@ Vario <- variog(ETH_malaria_data_geo,max.dist=MaxDist,uvec=seq(0.01,MaxDist,0.2)
 Vario$n
 ```
 
-    ##  [1]  85 432 541 586 692 607 652 661 679 663 736 764 711 692 577 585 594
-    ## [18] 551 630 724
+    ##  [1]  85 432 541 586 692 607 652 661 679 663 736 764 711 692 577 585 594 551 630
+    ## [20] 724
 
 ``` r
 #What is the minimum? A rule of thumb is 30 in each bin
@@ -431,7 +363,7 @@ min(Vario$n)
 plot(Vario,pch=16)
 ```
 
-![](week3_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](week3_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 We can now fit variogram model by minimized least sqaures using
 different covariance models. In this case we are just going to use a
@@ -445,8 +377,8 @@ VarioMod_sph<-variofit(Vario, cov.model = "sph")
     ## variofit: weights used: npairs 
     ## variofit: minimisation function used: optim
 
-    ## Warning in variofit(Vario, cov.model = "sph"): initial values not provided
-    ## - running the default search
+    ## Warning in variofit(Vario, cov.model = "sph"): initial values not provided -
+    ## running the default search
 
     ## variofit: searching for best initial value ... selected values:
     ##               sigmasq phi    tausq kappa
@@ -462,8 +394,8 @@ VarioMod_exp<-variofit(Vario, cov.model = "exp")
     ## variofit: weights used: npairs 
     ## variofit: minimisation function used: optim
 
-    ## Warning in variofit(Vario, cov.model = "exp"): initial values not provided
-    ## - running the default search
+    ## Warning in variofit(Vario, cov.model = "exp"): initial values not provided -
+    ## running the default search
 
     ## variofit: searching for best initial value ... selected values:
     ##               sigmasq phi    tausq kappa
@@ -478,7 +410,7 @@ lines(VarioMod_sph,col="blue",lwd=2)
 lines(VarioMod_exp,col="red",lwd=2) 
 ```
 
-![](week3_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](week3_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 ``` r
 # Get summaries of the fits
@@ -605,7 +537,7 @@ KrigPred <- krige.conv(ETH_malaria_data_geo, loc=pred_grid,
 image(KrigPred,col=heat.colors(50))
 ```
 
-![](week3_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](week3_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 If you want to create a raster of your predictions, you can use the
 `rasterFromXYZ` function
@@ -620,7 +552,7 @@ points(ETH_malaria_data[,c("longitude","latitude")],
        cex = ETH_malaria_data$pf_pr * 10)
 ```
 
-![](week3_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](week3_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
 
 Generating cross-validated predictions in straightforward in geoR using
 the `xvlalid` function
@@ -642,4 +574,105 @@ plot(xvalid_result$data,xvalid_result$predicted, asp=1)
 abline(0,1)
 ```
 
-![](week3_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](week3_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+
+You might notice that some of the kriged values are \<0. As we are
+modeling probabilities this can’t be true. In these situations, it is
+possible to apply a transformation to your data before kriging and then
+back-transform results. One transformation useful for probabilities is
+the logit transform (used in logistic regression). The `logit` and
+`inv.logit` functions from the package `gtools` can be used for this.
+Note that it doesn’t work if you have 0 values as you can’t log(0). You
+can add a small amount to avoid this situation. The process would look
+like this
+
+``` r
+# Add small amount to avoid zeros
+ETH_malaria_data$pf_pr_adj <- ETH_malaria_data$pf_pr + 0.001
+
+# Apply logit transform and convert to geodata
+ETH_malaria_data$pf_pr_logit <- logit(ETH_malaria_data$pf_pr_adj)
+ETH_malaria_data_geo_logit <- as.geodata(ETH_malaria_data[,c("longitude","latitude","pf_pr_logit")])
+
+# Fit (spherical) variogram
+Vario_logit <- variog(ETH_malaria_data_geo_logit, max.dist = MaxDist)
+```
+
+    ## variog: computing omnidirectional variogram
+
+``` r
+VarioMod_sph_logit <- variofit(Vario_logit, cov.model = "sph")
+```
+
+    ## variofit: covariance model used is spherical 
+    ## variofit: weights used: npairs 
+    ## variofit: minimisation function used: optim
+
+    ## Warning in variofit(Vario_logit, cov.model = "sph"): initial values not provided
+    ## - running the default search
+
+    ## variofit: searching for best initial value ... selected values:
+    ##               sigmasq phi    tausq  kappa
+    ## initial.value "1.16"  "2.45" "0.15" "0.5"
+    ## status        "est"   "est"  "est"  "fix"
+    ## loss value: 448.598010419967
+
+``` r
+# Get CV kriged predictions
+xvalid_result_logit <- xvalid(ETH_malaria_data_geo_logit, model = VarioMod_sph_logit)
+```
+
+    ## xvalid: number of data locations       = 203
+    ## xvalid: number of validation locations = 203
+    ## xvalid: performing cross-validation at location ... 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 
+    ## xvalid: end of cross-validation
+
+``` r
+xvalid_result_inv_logit <- inv.logit(xvalid_result_logit$predicted)
+```
+
+## Pop quiz
+
+  - How could you compare how well the best fitting IDW performs versus
+    kriging?
+  - Which appears to be more accurate?
+  - Can you visualize where predictions from IDW differ to kriging?
+  - Does inclusion of a trend surface improve kriging estimates?
+
+Answers
+[here](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week_3_cheat_sheet.R)
+
+## Key readings
+
+#### Good overview
+
+Pfeiffer, D., T. P. Robinson, M. Stevenson, K. B. Stevens, D. J. Rogers
+and A. C. Clements (2008). Spatial analysis in epidemiology, Oxford
+University Press Oxford. Chapter 6.
+
+#### Technical paper covering kernel estimation of relative risk
+
+Kelsall, Julia E., and Peter J. Diggle. “Kernel estimation of relative
+risk.” Bernoulli 1.1-2 (1995): 3-16.
+
+#### Illustration of the Kelsall Diggle approach used to map sleeping sickness risk
+
+[Simarro, Pere P., et al. “Estimating and mapping the population at risk
+of sleeping sickness.” PLoS neglected tropical diseases 6.10 (2012):
+e1859.](https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0001859)
+
+## Additional readings
+
+#### Nice example of kriging applied across space and time
+
+[Gething, Peter W., et al. “A local space–time kriging approach applied
+to a national outpatient malaria data set.” Computers & geosciences
+33.10 (2007):
+1337-1350.](https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0030271)
+
+### Additional example of Kelsall Diggle in action
+
+Di Salvo, Francesca, et al. “Spatial variation in mortality risk for
+hematological malignancies near a petrochemical refinery: A
+population-based case-control study.” Environmental research 140 (2015):
+641-648.
