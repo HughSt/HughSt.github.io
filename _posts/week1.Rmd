@@ -254,7 +254,7 @@ If you want to export the data, there are several options.
 2. Save as kml for someone to open in Google Earth
 ```
 library(plotKML)
-plotKML(BF_malaria_data_SPDF) # see ?plotKML for more options
+plotKML(ETH_malaria_data_SPDF) # see ?plotKML for more options
 ```
 
 # Pop quiz
