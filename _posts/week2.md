@@ -23,35 +23,16 @@ library(sp)
 library(raster)
 library(leaflet)
 library(rgdal)
-```
-
-    ## rgdal: version: 1.4-4, (SVN revision 833)
-    ##  Geospatial Data Abstraction Library extensions to R successfully loaded
-    ##  Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
-    ##  Path to GDAL shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/gdal
-    ##  GDAL binary built with GEOS: FALSE 
-    ##  Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
-    ##  Path to PROJ.4 shared files: /Library/Frameworks/R.framework/Versions/3.5/Resources/library/rgdal/proj
-    ##  Linking to sp version: 1.3-1
-
-``` r
 library(geosphere)
 library(rgeos)
-```
-
-    ## rgeos version: 0.4-3, (SVN revision 595)
-    ##  GEOS runtime version: 3.6.1-CAPI-1.10.1 
-    ##  Linking to sp version: 1.3-1 
-    ##  Polygon checking: TRUE
-
-``` r
 library(wesanderson)
 library(stats)
+library(ggplot2)
 ```
 
 First we are going to subset some spatial (polygon) data. For this
-excersize, we are going to use the admin 2 boundaries for Burkina Faso
-we used in week 1. As a reminder, we can load these in from a local
+exersize, we are going to use the admin 1 boundaries for Ethiopia we
+used in week 1. As a reminder, we can load these in from a local
 shapefile using the readOGR function, or we can use the handy `getData`
 function from the `raster` package to access GADM data.
 
@@ -72,7 +53,7 @@ ETH_Adm_1_cropped
     ## class       : SpatialPolygonsDataFrame 
     ## features    : 1 
     ## extent      : 38.6394, 38.90624, 8.833486, 9.098195  (xmin, xmax, ymin, ymax)
-    ## crs         : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+    ## crs         : +proj=longlat +datum=WGS84 +no_defs 
     ## variables   : 10
     ## names       : GID_0,   NAME_0,   GID_1,      NAME_1,                                     VARNAME_1, NL_NAME_1,    TYPE_1, ENGTYPE_1, CC_1, HASC_1 
     ## value       :   ETH, Ethiopia, ETH.1_1, Addis Abeba, Āddīs Ābaba|Addis Ababa|Adis-Abeba|Ādīs Ābeba,        NA, Astedader,      City,   14,  ET.AA
@@ -83,21 +64,20 @@ plot(ETH_Adm_1_cropped)
 lines(ETH_Adm_1_cropped, col="red", lwd=2)
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 You can also subset by name. For example, if we wanted to extract the
-polygon representing the boundary of the province
-“Cascades”
+polygon representing the boundary of the province “Amhara”
 
 ``` r
-ETH_Adm_1_Amhara <- subset(ETH_Adm_1, ETH_Adm_1$NAME_1=="Amhara") #OR BF_Adm_1[BF_Adm_1$NAME_1=="Cascades",] will also work
+ETH_Adm_1_Amhara <- subset(ETH_Adm_1, ETH_Adm_1$NAME_1=="Amhara") #OR ETH_Adm_1[ETH_Adm_1$NAME_1=="Amhara",] will also work
 ETH_Adm_1_Amhara
 ```
 
     ## class       : SpatialPolygonsDataFrame 
     ## features    : 1 
     ## extent      : 35.25711, 40.21244, 8.714812, 13.7687  (xmin, xmax, ymin, ymax)
-    ## crs         : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+    ## crs         : +proj=longlat +datum=WGS84 +no_defs 
     ## variables   : 10
     ## names       : GID_0,   NAME_0,   GID_1, NAME_1, VARNAME_1, NL_NAME_1, TYPE_1, ENGTYPE_1, CC_1, HASC_1 
     ## value       :   ETH, Ethiopia, ETH.3_1, Amhara,     Amara,        NA,  Kilil,     State,   03,  ET.AM
@@ -108,13 +88,16 @@ plot(ETH_Adm_1)
 lines(ETH_Adm_1_Amhara, col="blue", lwd=2)
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-5-1.png)<!-- --> \#\#\# Pop
+quiz \* How would you plot all provinces except Amhara? \* Try plotting
+all province using leaflet, with Amhara colored red and all others
+colored orange.
 
 ## Spatial overlays
 
 Often, we have point and polygon data and wish to relate them. For
 example, we might want to summarize point data over regions. To
-illustrate this, we are going to use the Burkina Faso malaria point
+illustrate this, we are going to use the Ethiopia malaria point
 prevalence data and aggregate that to provincial level to get a
 provincial level estimate of prevalence.
 
@@ -142,20 +125,16 @@ a look
 crs(ETH_Adm_1)
 ```
 
-    ## CRS arguments:
-    ##  +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
+    ## CRS arguments: +proj=longlat +datum=WGS84 +no_defs
 
 ``` r
 crs(ETH_malaria_data_SPDF)
 ```
 
-    ## CRS arguments:
-    ##  +init=epsg:4326 +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84
-    ## +towgs84=0,0,0
+    ## CRS arguments: +proj=longlat +datum=WGS84 +no_defs
 
 To reproject to the same CRS, you can use the `spTransform` function
-from the `sp`
-package
+from the `sp` package
 
 ``` r
 ETH_malaria_data_SPDF <- spTransform(ETH_malaria_data_SPDF, crs(ETH_Adm_1))
@@ -167,7 +146,7 @@ ETH_malaria_data_SPDF
     ## class       : SpatialPointsDataFrame 
     ## features    : 203 
     ## extent      : 34.5418, 42.4915, 3.8966, 9.9551  (xmin, xmax, ymin, ymax)
-    ## crs         : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+    ## crs         : +proj=longlat +datum=WGS84 +no_defs 
     ## variables   : 3
     ## names       : examined, pf_pos,       pf_pr 
     ## min values  :       37,      0,           0 
@@ -181,8 +160,7 @@ ETH_Adm_1_per_point <- over(ETH_malaria_data_SPDF, ETH_Adm_1)
 
 This gives us a table where each row represents a point from
 `ETH_malaria_data_SPDF` and columns represent the data from `ETH_Adm_1`.
-Let’s take a
-    look
+Let’s take a look
 
 ``` r
 head(ETH_Adm_1_per_point)
@@ -217,8 +195,7 @@ table(ETH_Adm_1_per_point$NAME_1)
 
 Or we can use the `tapply` function for more complex calculations.
 `tapply` allows us to apply a function across groups. Let’s look at the
-number examined per admin
-unit
+number examined per admin unit
 
 ``` r
 Nex_per_Adm1 <- tapply(ETH_malaria_data_SPDF$examined, ETH_Adm_1_per_point$NAME_1, sum)
@@ -228,8 +205,7 @@ Nex_per_Adm1
     ## Benshangul-Gumaz  Gambela Peoples           Oromia 
     ##              109              108            24350
 
-Now let’s get the number of positives by admin
-unit
+Now let’s get the number of positives by admin unit
 
 ``` r
 Npos_per_Adm1 <- tapply(ETH_malaria_data_SPDF$pf_pos, ETH_Adm_1_per_point$NAME_1, sum)
@@ -283,49 +259,85 @@ head(ETH_Adm_1)
     ## 4 Benshangul-Gumaz   ETH Ethiopia ETH.4_1
     ## 5        Dire Dawa   ETH Ethiopia ETH.5_1
     ## 6  Gambela Peoples   ETH Ethiopia ETH.6_1
-    ##                                       VARNAME_1 NL_NAME_1    TYPE_1
-    ## 1 Āddīs Ābaba|Addis Ababa|Adis-Abeba|Ādīs Ābeba      <NA> Astedader
-    ## 2                                                    <NA>     Kilil
-    ## 3                                         Amara      <NA>     Kilil
-    ## 4                              Beneshangul Gumu      <NA>     Kilil
-    ## 5                                                    <NA> Astedader
-    ## 6                                       Gambela      <NA>     Kilil
-    ##   ENGTYPE_1 CC_1 HASC_1  prevalence
-    ## 1      City   14  ET.AA          NA
-    ## 2     State   02  ET.AF          NA
-    ## 3     State   03  ET.AM          NA
-    ## 4     State   06  ET.BE 0.009174312
-    ## 5      City   15  ET.DD          NA
-    ## 6     State   12  ET.GA 0.000000000
+    ##                                       VARNAME_1 NL_NAME_1    TYPE_1 ENGTYPE_1
+    ## 1 Āddīs Ābaba|Addis Ababa|Adis-Abeba|Ādīs Ābeba      <NA> Astedader      City
+    ## 2                                                    <NA>     Kilil     State
+    ## 3                                         Amara      <NA>     Kilil     State
+    ## 4                              Beneshangul Gumu      <NA>     Kilil     State
+    ## 5                                                    <NA> Astedader      City
+    ## 6                                       Gambela      <NA>     Kilil     State
+    ##   CC_1 HASC_1  prevalence
+    ## 1   14  ET.AA          NA
+    ## 2   02  ET.AF          NA
+    ## 3   03  ET.AM          NA
+    ## 4   06  ET.BE 0.009174312
+    ## 5   15  ET.DD          NA
+    ## 6   12  ET.GA 0.000000000
 
 We can now plot province colored by prevalence. Let’s use the leaflet
 package
 
-    # First define a color palette based on prevalence
-    colorPal <- colorNumeric(wes_palette("Zissou1")[1:5], ETH_Adm_1$prevalence)
-    
-    # Plot with leaflet
-    leaflet() %>% addProviderTiles("CartoDB.Positron") %>% addPolygons(data=ETH_Adm_1, 
-                                             col=colorPal(ETH_Adm_1$prevalence),
-                                             fillOpacity=0.6) %>%
-                                             addLegend(pal = colorPal, 
-                                             values = ETH_Adm_1$prevalence,
-                                             title = "Prevalence")
+``` r
+# First define a color palette based on prevalence
+colorPal <- colorNumeric(wes_palette("Zissou1")[1:5], ETH_Adm_1$prevalence)
+
+# Plot with leaflet
+leaflet() %>% addProviderTiles("CartoDB.Positron") %>% addPolygons(data=ETH_Adm_1, 
+                                         col=colorPal(ETH_Adm_1$prevalence),
+                                         fillOpacity=0.6) %>%
+                                         addLegend(pal = colorPal, 
+                                         values = ETH_Adm_1$prevalence,
+                                         title = "Prevalence")
+```
+
+![](week2_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+### Notes on table joins
+
+In this example, we joined the table of prevalence values for each State
+using the common `NAME_1` field Often, however, when you are joining a
+table of data to some spatial data, they are from different sources and
+the common field on which to match rows can be formatted differently.
+For example if you were merging a table of state level data for the USA
+using the state name, your table might have an entry for `California`
+which would not match with your spatial data if it has `california` as
+the corresponding entry. It is always preferable to use ID codes over
+names for matching as these are often less variable. If you do have to
+use a character string such as name, the following functions are useful
+ways to reformat characters to make sure they match:
+
+\-`substr` - this allows you to extract substrings, for example
+`substr("Cali", 1,2)` extracts the first to second characters and would
+give you back `Ca` -`tolower` - converts all characters to lower case.
+`toupper` is the reverse. -`gsub` - allows you to replace characters.
+For example `substr(".", "-", "CA.USA")` would change any `.` to `-`,
+i.e. in this example it would return `CA-USA`.
+
+### Pop quiz
+
+  - Try generating the same plot using a different color palette.
+  - How would you plot only the provinces for which you have prevalence
+    estimates?
 
 # Manipulating raster data
 
 You’ve now seen how to subset polygons and relate point and polygon
 data. Now we are going to look at basic manipulations of raster data. We
-are going to load 2 raster file, elevation and land use for Burkina
-Faso.
+are going to load 2 raster file, elevation and land use for Ethiopia.
 
 ``` r
 # Get elevation using the getData function from the raster package
 ETH_elev <- raster::getData("alt", country="ETH")
+```
+
+    ## Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO"): Discarded
+    ## datum Unknown based on WGS84 ellipsoid in CRS definition
+
+``` r
 plot(ETH_elev)
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 # Land use (# For information on land use classifications see http://due.esrin.esa.int/files/GLOBCOVER2009_Validation_Report_2.2.pdf)
@@ -337,7 +349,7 @@ ETH_land_use
     ## dimensions : 4121, 5384, 22187464  (nrow, ncol, ncell)
     ## resolution : 0.002777778, 0.002777778  (x, y)
     ## extent     : 33.00139, 47.95694, 3.398611, 14.84583  (xmin, xmax, ymin, ymax)
-    ## crs        : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+    ## crs        : +proj=longlat +datum=WGS84 +no_defs 
     ## source     : https://github.com/HughSt/HughSt.github.io/blob/master/course_materials/week2/Lab_files/ETH_land_use.tif?raw=true 
     ## names      : ETH_land_use.tif.raw.true 
     ## values     : 11, 210  (min, max)
@@ -347,28 +359,32 @@ ETH_land_use
 plot(ETH_land_use)
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-17-2.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
 
 ``` r
-# For a break down of the classes in BF aka how often each land use type occurs in BF
+# For a break down of the classes in Ethiopia aka how often each land use type occurs
 #(Note: this is just the number of pixels per land use type - NOT acres)
 table(ETH_land_use[]) 
 ```
 
     ## 
-    ##      11      14      20      30      40      60      90     110     120 
-    ##  105074  336324 2451623 2223305  129786  813227       8 5254463  580793 
-    ##     130     140     150     160     170     180     190     200     210 
-    ## 1900890 1403832 1998099    6765      18   26026    6375 2947145 2003711
+    ##      11      14      20      30      40      60      90     110     120     130 
+    ##  105074  336324 2451623 2223305  129786  813227       8 5254463  580793 1900890 
+    ##     140     150     160     170     180     190     200     210 
+    ## 1403832 1998099    6765      18   26026    6375 2947145 2003711
 
 ## Resampling rasters
 
 Its good practice to resample rasters to the same extent and resolution
 (i.e. same grid). This makes it easier to deal with later and to relate
 rasters to each other. The `resample` command in the `raster` package
-makes this process easy. The default method is bilinear interpolation,
-which doesn’t make sense for our categorical variable, so we should use
-the nearest neighbour function ‘ngb’
+makes this process easy. Here we are going to resample our land use
+raster, but for a deeper dive on resampling rasters of different data
+types, see
+[here](https://github.com/HughSt/HughSt.github.io/blob/master/_posts/raster_resampling.md).
+The default method is bilinear interpolation, which doesn’t make sense
+for our categorical variable, so we should use the nearest neighbour
+function ‘ngb’
 
 ``` r
 # Takes a little time to run..
@@ -383,8 +399,8 @@ ETH_land_use_resampled
     ## dimensions : 1416, 1824, 2582784  (nrow, ncol, ncell)
     ## resolution : 0.008333333, 0.008333333  (x, y)
     ## extent     : 32.9, 48.1, 3.2, 15  (xmin, xmax, ymin, ymax)
-    ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
-    ## source     : memory
+    ## crs        : +proj=longlat +datum=WGS84 +no_defs 
+    ## source     : /private/var/folders/1t/vvyjk4r52pn8rx79p7cl5s4r0000gn/T/RtmpHBOpLV/raster/r_tmp_2021-02-24_143834_26120_37754.grd 
     ## names      : ETH_land_use.tif.raw.true 
     ## values     : 11, 210  (min, max)
 
@@ -396,7 +412,7 @@ ETH_elev
     ## dimensions : 1416, 1824, 2582784  (nrow, ncol, ncell)
     ## resolution : 0.008333333, 0.008333333  (x, y)
     ## extent     : 32.9, 48.1, 3.2, 15  (xmin, xmax, ymin, ymax)
-    ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
+    ## crs        : +proj=longlat +datum=WGS84 +no_defs 
     ## source     : /Users/sturrockh/Documents/Work/MEI/DiSARM/GitRepos/spatial-epi-course/_posts/ETH_msk_alt.grd 
     ## names      : ETH_msk_alt 
     ## values     : -189, 4420  (min, max)
@@ -413,8 +429,7 @@ res(ETH_elev) # in decimal degrees. 1 dd roughly 111km at the equator
 
     ## [1] 0.008333333 0.008333333
 
-Let’s aggregate (make lower resolution) by a factor of
-10
+Let’s aggregate (make lower resolution) by a factor of 10
 
 ``` r
 ETH_elev_low_res <- aggregate(ETH_elev, fact = 10) # by default, calculates mean
@@ -427,10 +442,10 @@ res(ETH_elev_low_res)
 plot(ETH_elev_low_res)
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 You can change the values of the pixels easily. For example, if you want
-to change the `BF_elev` raster from its native meters to feet, you can
+to change the `ETH_elev` raster from its native meters to feet, you can
 mulitply by 3.28
 
 ``` r
@@ -438,7 +453,7 @@ ETH_elev_feet <- ETH_elev*3.28
 plot(ETH_elev_feet)
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 Similarly, you can categorize raster values
 
@@ -447,20 +462,19 @@ ETH_elev_categorized <- cut(ETH_elev, 4)
 plot(ETH_elev_categorized)
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 If a raster is the same resolution and extent, you can perform joint
-operations on them, for example subtract values of one from
-another
+operations on them, for example subtract values of one from another
 
 ``` r
 new_raster <- ETH_elev - ETH_land_use_resampled # Meaningless! Just for illustrative purposes..
 plot(new_raster)
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
-# Extracting data From rasters
+# Extracting data from rasters
 
 Now let’s extract values of elevation at each survey point. You can use
 the `extract` function from the raster package and insert the extracted
@@ -474,7 +488,7 @@ ETH_malaria_data_SPDF # now has 3 variables
     ## class       : SpatialPointsDataFrame 
     ## features    : 203 
     ## extent      : 34.5418, 42.4915, 3.8966, 9.9551  (xmin, xmax, ymin, ymax)
-    ## crs         : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+    ## crs         : +proj=longlat +datum=WGS84 +no_defs 
     ## variables   : 4
     ## names       : examined, pf_pos,       pf_pr, elev 
     ## min values  :       37,      0,           0,  817 
@@ -483,18 +497,18 @@ ETH_malaria_data_SPDF # now has 3 variables
 You can also extract values using polygons e.g to get admin 1 level
 elevations. You just have to define a function to apply, otherwise you
 get all the pixel values per polygon. For very large rasters, check out
-the `velox`
-package.
+the `velox` package.
 
 ``` r
 ETH_Adm_1$elev <- extract(ETH_elev, ETH_Adm_1, fun=mean, na.rm=TRUE) # takes a little longer..
 ```
 
+    ## Warning in .getRat(x, ratvalues, ratnames, rattypes): NAs introduced by coercion
+
 # Exploratory spatial analysis
 
 We can now have a quick look at the relationship between prevalence and
-elevation. First generate a prevalence
-variable
+elevation. First generate a prevalence variable
 
 ``` r
 ETH_malaria_data_SPDF$prevalence <- ETH_malaria_data_SPDF$pf_pos / ETH_malaria_data_SPDF$examined
@@ -503,24 +517,23 @@ ETH_malaria_data_SPDF$prevalence <- ETH_malaria_data_SPDF$pf_pos / ETH_malaria_d
 Now you can plot the relationship between prevalence and elevation
 
 ``` r
-plot(ETH_malaria_data_SPDF$elev, ETH_malaria_data_SPDF$prevalence)
+ggplot(ETH_malaria_data_SPDF@data) + geom_point(aes(elev, prevalence))
 ```
 
-![](week2_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
 
 You might also be interested in distances to/from other features
 (e.g. health facilities, water). Here we are going to load up a
 waterbody layer (obtained via <http://www.diva-gis.org/Data>) and
 calculate distance from each point. In this case, the file is in GeoJSON
-format instead of Shapefile. `readOGR` is able to handle GeoJSON
-easily.
+format instead of Shapefile. `readOGR` is able to handle GeoJSON easily.
 
 ``` r
 waterbodies <- readOGR("https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week2/Lab_files/ETH_waterbodies.geojson")
 ```
 
     ## OGR data source with driver: GeoJSON 
-    ## Source: "https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week2/Lab_files/ETH_waterbodies.geojson", layer: "OGRGeoJSON"
+    ## Source: "https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week2/Lab_files/ETH_waterbodies.geojson", layer: "ETH_waterbodies"
     ## with 380 features
     ## It has 5 fields
 
@@ -531,7 +544,7 @@ waterbodies
     ## class       : SpatialPolygonsDataFrame 
     ## features    : 380 
     ## extent      : 33.00001, 46.80059, 4.232061, 14.55  (xmin, xmax, ymin, ymax)
-    ## crs         : +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+    ## crs         : +proj=longlat +datum=WGS84 +no_defs 
     ## variables   : 5
     ## names       : ISO,  COUNTRY,                 F_CODE_DES,                             HYC_DESCRI,                  NAME 
     ## min values  : ETH, Ethiopia,               Inland Water, Non-Perennial/Intermittent/Fluctuating, ABAY WENZ (BLUE NILE) 
@@ -541,7 +554,7 @@ waterbodies
 plot(waterbodies)
 ```
 
-![](master/_posts/week2_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](week2_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 The goesphere package has some nice functions such as `dist2Line` which
 calculates distance in meters from spatial data recorded using decimal
@@ -598,3 +611,46 @@ first observation)
 ``` r
 ETH_malaria_data_SPDF$dist_to_water_point <- apply(dist_matrix, 1, min)
 ```
+
+The alternative, much faster, but potentially less accurate method to
+‘distm’, is to use the nn2 function from the RANN package. This allows
+you to calculate the nearest point from each observation and then you
+can use the ‘distGeo’ function from the ‘geosphere’ package to calculate
+the distance in meters. The reason this could be inaccurate, is that the
+nearest point in decimal degrees might not be the nearest in meters as
+degrees are not a good measure of distance. In most cases, you are
+probably OK.
+
+``` r
+library(RANN)
+library(geosphere)
+
+# Get the index of the waterbody points that are nearest to each observation
+nn <- nn2(waterbodies_points@coords,ETH_malaria_data_SPDF@coords, 
+          k=1)
+          
+# Calculate the distance in meters between each observation and its nearest waterbody point   
+ETH_malaria_data_SPDF$dist_to_water_point <- distGeo(ETH_malaria_data_SPDF@coords,
+        waterbodies_points@coords[nn$nn.idx,])
+```
+
+## Useful resources
+
+  - The [raster package
+    vignette](https://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf)
+    is extremely useful
+
+  - If you are bumping into speed issues extracting/summarizing raster
+    data, have a look at the [velox
+    package](http://philipphunziker.com/velox/)
+
+## Key readings
+
+This week is all about practice. Instead of working through journal
+articles, have a play with your data and get to know how the functions
+work.
+
+## Pop quiz answers
+
+Can be found
+[here](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/course_materials/week2/cheat_sheet_week2_2019.R)
