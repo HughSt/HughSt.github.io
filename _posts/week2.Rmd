@@ -175,9 +175,14 @@ leaflet() %>% addProviderTiles("CartoDB.Positron") %>% addPolygons(data=ETH_Adm_
 ### Notes on table joins
 In this example, we joined the table of prevalence values for each State using the common `NAME_1` field Often, however, when you are joining a table of data to some spatial data, they are from different sources and the common field on which to match rows can be formatted differently. For example if you were merging a table of state level data for the USA using the state name, your table might have an entry for `California` which would not match with your spatial data if it has `california` as the corresponding entry. It is always preferable to use ID codes over names for matching as these are often less variable. If you do have to use a character string such as name, the following functions are useful ways to reformat characters to make sure they match:
 
--`substr` - this allows you to extract substrings, for example `substr("Cali", 1,2)` extracts the first to second characters and would give you back `Ca`
--`tolower` - converts all characters to lower case. `toupper` is the reverse.
--`gsub` - allows you to replace characters. For example `substr(".", "-", "CA.USA")` would change any `.` to `-`, i.e. in this example it would return `CA-USA`.
+* `substr` - this allows you to extract substrings, for example
+`substr("Cali", 1,2)` extracts the first to second characters and would
+give you back `Ca` 
+* `tolower` - converts all characters to lower case.
+`toupper` is the reverse. 
+* `gsub` - allows you to replace characters.
+For example `gsub(" ", "-", "CA USA")` would replace any whitespace with `-`,
+i.e. in this example it would return `CA-USA`.
 
 ### Pop quiz
 * Try generating the same plot using a different color palette.
