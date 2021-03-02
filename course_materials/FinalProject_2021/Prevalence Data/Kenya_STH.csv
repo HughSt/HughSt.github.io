@@ -1,0 +1,68 @@
+full_name_paper,adm1_name,adm2_name,lat,long,stoolsexaminedgeo,asc_np,tri_np,hk_np
+Bukoma,Western,Busia,0.0865,33.9595,73,53,70,45
+St Cecilia,Western,Busia,0.09733,33.973,73,30,50,30
+Lunyofu,Western,Busia,0.08167,33.9805,73,57,67,64
+Musoma Budalangi,Western,Busia,0.06217,33.9818,88,78,82,73
+Bubango,Western,Busia,0.10633,33.9903,74,40,51,40
+Sisenye,Western,Busia,0.15917,33.9988,219,0,,104
+Busembe,Western,Busia,0.1905,34.0083,74,20,41,63
+Busijo,Western,Busia,0.1995,34.0122,55,12,15,44
+Bujwanga,Western,Busia,0.22233,34.0212,61,14,22,30
+Namunyweda,Western,Busia,0.1835,34.03,49,10,13,38
+Sigulu,Western,Busia,0.28033,34.06,74,45,60,70
+Agenga,Western,Busia,0.24367,34.0637,65,6,9,37
+Namalo,Western,Busia,0.14483,34.0702,74,34,36,53
+Rumbiye,Western,Busia,0.2135,34.0732,79,24,30,63
+Bwangangi,Western,Busia,0.346,34.0853,75,53,42,66
+Buduta,Western,Busia,0.20683,34.0892,75,46,62,68
+Namuduru,Western,Busia,0.17617,34.0925,73,30,31,63
+Madola,Western,Busia,0.242,34.0968,56,26,43,44
+Nambuku,Western,Busia,0.318,34.11,54,15,16,47
+Sagania,Western,Busia,0.30517,34.1275,79,21,26,57
+Busulere,Western,Busia,0.3235,34.1292,74,19,7,56
+Nyakhobi,Western,Busia,0.31867,34.1333,59,22,18,41
+Kabwodo,Western,Busia,0.3095,34.1758,75,46,41,67
+Mundaya,Western,Busia,0.32,34.1793,49,13,13,44
+Nyakasumbi,Nyanza,Bondo,-0.08,34.23,296,33,54,63
+Bar Konwino,Nyanza,Bondo,-0.13,34.235,165,17,18,46
+Uloma,Nyanza,Bondo,-0.077933,34.2565,151,55,39,58
+Nyawita,Nyanza,Bondo,-0.063817,34.2804,103,16,13,11
+Siger,Nyanza,Bondo,-0.120418,34.3458,48,13,7,14
+Ujuang'a,Nyanza,Bondo,-0.16936,34.347,39,4,4,21
+Rambugu,Nyanza,Bondo,-0.094055,34.354,40,17,10,28
+Rambira,Nyanza,Bondo,-0.104715,34.3557,50,19,8,20
+Ndwara,Nyanza,Bondo,-0.17747,34.3561,39,5,10,17
+Lwak Mixed,Nyanza,Bondo,-0.13654,34.3567,41,0,7,25
+Maugo,Nyanza,Bondo,-0.14751,34.3626,34,1,7,12
+Memba,Nyanza,Bondo,-0.15717,34.3647,34,4,4,8
+Mabinju,Nyanza,Bondo,-0.1795,34.369,36,5,5,9
+Atemo,Nyanza,Bondo,-0.13498,34.3691,32,2,4,9
+Kitambo,Nyanza,Bondo,-0.08823,34.37,40,18,5,8
+St Lazarus,Nyanza,Bondo,-0.069794,34.3729,42,14,6,18
+Got Bondo,Nyanza,Bondo,-0.10359,34.3751,29,7,8,13
+Majango,Nyanza,Bondo,-0.12567,34.3754,34,2,1,15
+Ongielo,Nyanza,Bondo,-0.173728,34.3794,40,8,5,23
+Saradidi,Nyanza,Bondo,-0.12298,34.3826,39,5,5,11
+Kaminogedo,Nyanza,Bondo,-0.149608,34.3827,37,1,5,26
+Ramba,Nyanza,Bondo,-0.080215,34.3851,36,15,14,17
+Raliew,Nyanza,Bondo,-0.178254,34.3866,78,17,13,32
+Kamalumbe,Nyanza,Bondo,-0.13778,34.3883,27,5,3,9
+Nguka,Nyanza,Bondo,-0.149338,34.3928,49,9,7,23
+Powo,Nyanza,Bondo,-0.128487,34.3952,39,8,2,19
+Kusa,Nyanza,Bondo,-0.07504,34.3954,37,31,24,20
+Okiro,Nyanza,Bondo,-0.161663,34.3968,48,6,9,23
+Aduoyo,Nyanza,Bondo,-0.172688,34.397,36,5,11,12
+Gunda Arut,Nyanza,Bondo,-0.093704,34.3991,33,10,6,12
+Luoro,Nyanza,Bondo,-0.10376,34.3992,39,12,6,20
+Nakhwana,Western,Teso,0.5787,34.4048,278,0,,236
+Wera,Nyanza,Bondo,-0.149884,34.4081,36,1,4,12
+Alara,Nyanza,Bondo,-0.135736,34.4085,46,8,7,14
+Kandhere,Nyanza,Bondo,-0.133078,34.42,40,3,4,24
+Osiri,Nyanza,Kisumu,-0.12465,34.60392,154,0,,38
+Misikhu,Western,Bungoma,0.7152,34.7136,57,0,,36
+Mwamosioma,Nyanza,Kisii Central,-0.6523,34.7859,233,72,,99
+Kandiang'a,Nyanza,Nyando,-0.3307,34.8694,158,0,,84
+Birongo,Nyanza,Kisii Central,-0.7457,34.8758,143,0,,48
+Koibem,Rift Valley,Nandi,0.158115,34.9502,185,22,9,10
+Kabaskei,Rift Valley,Nandi,0.149085,34.9536,134,38,17,40
+Kiborgok,Rift Valley,Nandi,0.203809,34.9746,201,18,11,15
