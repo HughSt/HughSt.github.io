@@ -79,7 +79,7 @@ leaflet() %>% addTiles() %>% addCircleMarkers(data=CaseControl_SPDF,
                                               radius = 2)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ## Risk Mapping using Kernel Density
 
@@ -98,7 +98,7 @@ Cases_ppp <- ppp(Cases$long, Cases$lat, window = Nam_Owin)
 plot(Cases_ppp)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 We can now generate and plot a kernel density estimate of cases
 
@@ -108,7 +108,7 @@ case_density <- density(Cases_ppp)
 plot(case_density) # Units are intensity of points per unit square
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 Its possible to use different bandwidths. The larger the bandwidth, the
 smoother the density estimate.
@@ -120,7 +120,7 @@ plot(density(Cases_ppp,0.1), main = "Bandwidth 0.02")
 plot(density(Cases_ppp,bw.ppl), main = "Automatically selected bandwidth") # automatic bandwidth selection based on cross-validation
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 If you want to map using leaflet, you have to convert the density object
 to a rasterLayer with a coordinate reference system
@@ -133,7 +133,7 @@ density_raster <- raster(density(Cases_ppp, bw.ppl), crs = crs(NAM_Adm0))
 leaflet() %>% addTiles() %>% addRasterImage(density_raster, opacity=0.6)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 But this is just a density of cases, e.g. it doesn’t account for the
 denominator - the controls. To do this, we can use the kelsall & diggle
@@ -166,7 +166,7 @@ risk_est <-  relrisk(CaseControl_ppp)
 plot(risk_est)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ## Obtaining a relative risk of being a case
 
@@ -176,7 +176,7 @@ rel_risk_est <-  relrisk(CaseControl_ppp, relative = TRUE)
 plot(rel_risk_est)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 To plot on a web map, first specify the projection
 
@@ -197,7 +197,7 @@ leaflet() %>% addTiles("http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.p
   addRasterImage(risk_raster, opacity=0.6, col = pal) 
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ## Interpolation of point (prevalence etc.) data
 
@@ -250,7 +250,7 @@ plot(idw(ETH_malaria_data_ppp, power=1, at="pixels"),col=heat.colors(20), main="
 plot(idw(ETH_malaria_data_ppp, power=2, at="pixels"),col=heat.colors(20), main="power = 2") 
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 To calculate the ‘best’ power to use, you can use cross-validation. This
 is possible using the argument at=points when running the idw function.
@@ -273,7 +273,7 @@ optimal_power <- powers[which.min(mse_result)]
 plot(powers, mse_result) 
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 Plot observed versus expected with optimal power
 
 {% highlight r %}
@@ -282,7 +282,7 @@ plot(ETH_malaria_data_ppp$marks, CV_idw_opt, xlab="Observed prevalence",
      ylab="Predicted prevalence")
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 Plot using leaflet.
 
@@ -312,7 +312,7 @@ leaflet() %>% addTiles() %>% addRasterImage(ETH_malaria_data_idw_raster, col = c
   addLegend(pal = colPal, values = ETH_malaria_data_idw_raster[])
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 ## Kriging
 
@@ -331,7 +331,7 @@ gives us lowes curves for the relationship between x and y
 plot(ETH_malaria_data_geo, lowes=T)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
 
 It’s important to assess whether there is a first order trend in the
 data before kriging. We can see from the plots of the prevalence against
@@ -355,7 +355,7 @@ VarioCloud<-variog(ETH_malaria_data_geo, option="cloud", max.dist=MaxDist)
 plot(VarioCloud) # all pairwise comparisons
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
 To make it easier to interpret, we can bin points by distance
 
 {% highlight r %}
@@ -368,7 +368,7 @@ Vario <- variog(ETH_malaria_data_geo, max.dist = MaxDist, trend = "2nd")
 plot(Vario)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
 
 Its possible to change the way the variogram bins are constructed. Just
 be careful not to have too few pairs of points in any distance class.
@@ -404,7 +404,7 @@ Plot
 plot(Vario,pch=16)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
 
 We can now fit variogram model by minimized least sqaures using
 different covariance models. In this case we are just going to use a
@@ -452,7 +452,7 @@ lines(VarioMod_sph,col="blue",lwd=2)
 lines(VarioMod_exp,col="red",lwd=2) 
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
 
 Get summaries of the fits
 
@@ -589,7 +589,7 @@ Visualize predictions
 image(KrigPred,col=heat.colors(50))
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
 
 If you want to create a raster of your predictions, you can use the
 `rasterFromXYZ` function
@@ -604,7 +604,7 @@ points(ETH_malaria_data[,c("longitude","latitude")],
        cex = ETH_malaria_data$pf_pr * 10)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
 
 Generating cross-validated predictions in straightforward in geoR using
 the
@@ -632,7 +632,7 @@ plot(xvalid_result$data,xvalid_result$predicted, asp=1,
 abline(0,1)
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/week3_updatedMar3_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
+![](week3_updatedMar3_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
 
 You might notice that some of the kriged values are \<0. As we are
 modeling probabilities this can’t be true. In these situations, it is
