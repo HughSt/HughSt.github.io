@@ -195,17 +195,16 @@ plot(ETH_malaria_data_ppp$marks, CV_idw_opt, xlab="Observed prevalence",
 
 Plot using leaflet.
 
-1. Convert to a raster
+
 ```{r}
+# 1. Convert to a raster
 ETH_malaria_data_idw_raster <- raster(idw(ETH_malaria_data_ppp, power=0.2, at="pixels"),
                                      crs= crs(ETH_Adm_1))
-```
-2. Define a color palette
-```{r}
+
+#2. Define a color palette
 colPal <- colorNumeric(tim.colors(), ETH_malaria_data_idw_raster[], na.color = NA)
-```
-3. Plot
-```{r, warning=F, message=F}
+
+# 3. Plot
 leaflet() %>% addTiles() %>% addRasterImage(ETH_malaria_data_idw_raster, col = colPal, opacity=0.7) %>%
   addLegend(pal = colPal, values = ETH_malaria_data_idw_raster[])
 ```
@@ -277,15 +276,15 @@ In this case, the spherical model has a slightly lower sum of squares, suggestin
 
 Now we have a variogram model depicting the covariance between pairs of points as a function of distance between points, we can use it to Krig values at prediction locations. To allow us to compare with IDW, first get grid of points from the IDW example for comparison
 
-1. Create prediction grid
+
 ```{r}
+# 1. Create prediction grid
 IDW <- idw(ETH_malaria_data_ppp, power=0.2, at="pixels")
 pred_grid_x <- rep(IDW$xcol,length(IDW$yrow))
 pred_grid_y <- sort(rep(IDW$yrow,length(IDW$xcol)))
 pred_grid <- cbind(pred_grid_x,pred_grid_y)
-```
-2. Now krig to those points
-```{r}
+
+# 2. Now krig to those points
 KrigPred <- krige.conv(ETH_malaria_data_geo, loc=pred_grid,
                        krige=krige.control(obj.model=VarioMod_sph))
 ```
