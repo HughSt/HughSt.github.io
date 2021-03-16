@@ -184,6 +184,8 @@ give you back `Ca`
 For example `gsub(" ", "-", "CA USA")` would replace any whitespace with `-`,
 i.e. in this example it would return `CA-USA`.
 
+See <a href="https://github.com/HughSt/HughSt.github.io/blame/master/_posts/table_joins.R" target="_blank">here</a> for a worked example of table joins in R.
+
 ### Pop quiz
 * Try generating the same plot using a different color palette.
 * How would you plot only the provinces for which you have prevalence estimates?
@@ -218,7 +220,7 @@ Its good practice to resample rasters to the same extent and resolution
 rasters to each other. The `resample` command in the `raster` package
 makes this process easy. Here we are going to resample our land use raster,
 but for a deeper dive on resampling rasters of different data types,
-see [here](https://github.com/HughSt/HughSt.github.io/blob/master/_posts/raster_resampling.md). The default method is bilinear interpolation,
+see <a href="https://github.com/HughSt/HughSt.github.io/blob/master/_posts/raster_resampling.md" target="_blank">here</a>. The default method is bilinear interpolation,
 which doesn’t make sense for our categorical variable, so we should use
 the nearest neighbour function ‘ngb’
 
