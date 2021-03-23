@@ -86,7 +86,7 @@ leaflet(BF_malaria_data) %>% addTiles() %>% addCircleMarkers(~longitude, ~latitu
   addLegend(pal = pal, values = ~prevalence)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ## Part I: Testing for spatial autocorrelation in point-level data
 
@@ -112,14 +112,14 @@ Moran’s I.
 hist(BF_malaria_data$prevalence, xlab = "Prevalence", main = "")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 BF_malaria_data$log_odds <- logit(BF_malaria_data$prevalence)
 hist(BF_malaria_data$log_odds, xlab = "Log odds", main = "")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
 
 ``` r
 # Generate a distance matrix
@@ -169,7 +169,7 @@ pgi.cor <- correlog(coords=xy, z=BF_malaria_data$log_odds, method="Moran", nbcla
 plot(pgi.cor) # statistically significant values (p<0.05) are plotted in red
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 pgi.cor # distclass is midpoint for the bin
@@ -206,7 +206,7 @@ plot(Vario)
 plot(pgi.cor)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 Approach 3: Calculate Moran’s I using a binary distance matrix. For this
 approach, we are going to create sets of ‘neighbors’ based upon their
@@ -274,7 +274,7 @@ plot(xy, pch=16)
 plot(Neigh_kd2, coords,col="green", add=T)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 To run a spatial test for clustering, we need to assign weights to the
 neighbor list. We will use the neighbor structure with all neighbors
@@ -349,7 +349,7 @@ hist(bperm$res, freq=T, breaks=20, xlab="Simulated Moran's I")
 abline(v=0.15, col="red")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 We can now also take a look at running Moran’s I for areal data
 (polygons), using a dataset on leukemia from New York (Turnbull et al
@@ -424,7 +424,7 @@ plot(nydata)
 plot(nydata_nbr,coords_ny,col="green",add=T)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 As above, we then set the weights for the neighbor matrix. The default
 is row standardized (each row sums to one), or binary, where neighbors
@@ -624,7 +624,7 @@ nci<-moran.plot(BF_malaria_data$log_odds, listw=weights,
 text(c(3,3, -5,-5),c(0.9, -1.9,0.9,-1.9), c("High-High", "High-Low", "Low-High", "Low-Low"), cex=0.8)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 # Map points that are local outliers in the plot
@@ -661,7 +661,7 @@ leaflet(BF_malaria_localM) %>% addTiles() %>% addCircleMarkers(~longitude, ~lati
   addLegend(pal = factpal, values = ~names, title="Class")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 ## Part II: Examining spatial point processes
 
@@ -693,7 +693,7 @@ leaflet() %>% addTiles() %>% addCircleMarkers(data=CaseControl_SPDF, color = cas
                                               radius=3)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 In the previous lecture, you already generated first order kernel
 density estimates and calculated the ratio of the density estimate of
@@ -716,7 +716,7 @@ par(mfrow=c(1,1)) # Plot the estimate of K(r); note different border-corrected e
 plot(K, xlab="d (dd)", ylab="K(dd)") # Red dashed line is expected K value computed for a CRS process
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 ``` r
 E<-envelope(CasesPPP, Kest, nsim=999) # Plot confidence envelope using MC simulation
@@ -726,7 +726,7 @@ E<-envelope(CasesPPP, Kest, nsim=999) # Plot confidence envelope using MC simula
 plot(E)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 The K-function computed for cases assumes that H0 is complete spatial
 randomness. What are the limitations of this assumption?
@@ -748,7 +748,7 @@ KX <- Kest(CaseControlPPP[CaseControlPPP$marks==1],correction=c("isotropic", "Ri
 plot(KX, sqrt(iso/pi) ~ r)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
 
 ``` r
 # Calculate the K-function for controls
@@ -756,7 +756,7 @@ KY <- Kest(CaseControlPPP[CaseControlPPP$marks==0],correction=c("isotropic", "Ri
 plot(KY, sqrt(iso/pi) ~ r)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-29-2.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-29-2.png)<!-- -->
 
 ``` r
 # Calulate the difference in the two functions
@@ -764,7 +764,7 @@ Kdiff <- eval.fv(KX - KY)
 plot(Kdiff, legendpos="float")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-29-3.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-29-3.png)<!-- -->
 
 Approach 2: “Smacpod” package includes a function to estimate the
 difference in K function and plot simulated CI. Also includes a function
@@ -779,7 +779,7 @@ kdest = kdest(CaseControlPPP, case = 2,nsim=999, level=0.95, correction=c("isotr
 plot(kdest) # dark grey is min/max; light grey is confidence envelope (can change these with options)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
 
 ``` r
 kdplus.test(kdest) # Performs test of significance based on simulated confidence envelope and observed statistic
@@ -806,7 +806,7 @@ out<-spscan.test(CaseControlPPP, nsim = 999, case = 2, maxd=.15, alpha = 0.05)  
 plot(CaseControlPPP)
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
 
 ``` r
 case_color_scheme <- colorNumeric(c("blue", "red"), CaseControl_SPDF$case)
@@ -816,7 +816,7 @@ leaflet() %>% addTiles() %>% addCircleMarkers(data=CaseControl_SPDF, color = cas
              radius = out$clusters[[1]]$r*112*1000, color="grey")
 ```
 
-![](https://raw.githubusercontent.com/HughSt/HughSt.github.io/master/_posts/Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-32-2.png)<!-- -->
+![](Week-4-spatial-clustering_updatedMar19_files/figure-gfm/unnamed-chunk-32-2.png)<!-- -->
 
 ## Key Readings
 
